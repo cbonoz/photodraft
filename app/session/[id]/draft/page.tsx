@@ -18,6 +18,58 @@ function Spinner() {
   );
 }
 
+function PickModal({
+  photo,
+  playerName,
+  onConfirm,
+  onCancel,
+  pending,
+}: {
+  photo: Photo;
+  playerName: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+  pending: boolean;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+      <div className="bg-neutral-900 rounded-2xl max-w-lg w-full overflow-hidden">
+        <div className="aspect-square bg-neutral-800">
+          <img
+            src={photo.url}
+            alt=""
+            className="w-full h-full object-contain"
+          />
+        </div>
+        <div className="p-6 text-center">
+          <p className="text-lg font-semibold mb-1">
+            Assign to <span className="text-blue-400">{playerName}</span>?
+          </p>
+          <p className="text-neutral-500 text-sm mb-5">
+            This photo will be added to {playerName}&apos;s pile.
+          </p>
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={onCancel}
+              disabled={pending}
+              className="px-6 py-2.5 rounded-lg bg-neutral-800 text-neutral-300 font-medium hover:bg-neutral-700 disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onConfirm}
+              disabled={pending}
+              className="px-6 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-500 disabled:opacity-50"
+            >
+              {pending ? "Picking..." : "Confirm Pick"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function DraftPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
@@ -26,6 +78,7 @@ export default function DraftPage() {
   const returnMutation = useReturnPhoto(id);
   const resetMutation = useResetDraft(id);
   const [message, setMessage] = useState("");
+  const [pendingPhoto, setPendingPhoto] = useState<Photo | null>(null);
 
   if (isLoading) return <Spinner />;
 
@@ -68,6 +121,7 @@ export default function DraftPage() {
 
   async function handlePick(photoId: string) {
     setMessage("");
+    setPendingPhoto(null);
     try {
       await pickMutation.mutateAsync(photoId);
     } catch (e: unknown) {
@@ -89,6 +143,16 @@ export default function DraftPage() {
         <h1 className="text-2xl font-bold">{session.title}</h1>
         <div />
       </div>
+
+      {pendingPhoto && currentPlayer && (
+        <PickModal
+          photo={pendingPhoto}
+          playerName={currentPlayer.name}
+          onConfirm={() => handlePick(pendingPhoto.id)}
+          onCancel={() => setPendingPhoto(null)}
+          pending={pickMutation.isPending}
+        />
+      )}
 
       {draftComplete ? (
         <>
@@ -194,9 +258,8 @@ export default function DraftPage() {
               {available.map((p) => (
                 <button
                   key={p.id}
-                  onClick={() => handlePick(p.id)}
-                  disabled={pickMutation.isPending}
-                  className="aspect-square rounded-lg overflow-hidden bg-neutral-800 border-2 border-transparent hover:border-blue-500 transition-colors disabled:opacity-50"
+                  onClick={() => setPendingPhoto(p)}
+                  className="aspect-square rounded-lg overflow-hidden bg-neutral-800 border-2 border-transparent hover:border-blue-500 transition-colors"
                 >
                   <img
                     src={p.url}
