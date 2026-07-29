@@ -10,6 +10,7 @@ export interface Photo {
   id: string;
   path: string;
   url: string;
+  filename: string;
   sort_order: number;
 }
 

@@ -47,6 +47,9 @@ function PickModal({
           />
         </div>
         <div className="p-6 text-center">
+          <p className="text-xs text-[var(--text-muted)] mb-1 font-mono truncate max-w-full">
+            {photo.filename}
+          </p>
           <p className="text-lg font-semibold text-[var(--text)] mb-1">
             Assign to <span className="text-cyan-400">{playerName}</span>?
           </p>
