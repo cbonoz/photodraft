@@ -27,9 +27,9 @@
   --elevated: #0a0a12;
   --elevated2: #1a1a2e;
   --border: #2a2a3e;
-  --text: #e4e4ed;
-  --text-secondary: #a0a0b0;
-  --text-muted: #525266;
+  --text: #f0f0f5;
+  --text-secondary: #c8c8d8;
+  --text-muted: #808090;
 }
 
 body {
