@@ -1,0 +1,21 @@
+node_modules
+.next
+*.tgz
+.DS_Store
+
+# env
+.env
+.env.local
+.env.*.local
+
+# supabase local state
+supabase/.temp
+
+# idk
+out
+dist
+coverage
+*.lcov
+*.tsbuildinfo
+.cache
+.eslintcache
