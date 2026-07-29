@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState, useRef } from "react";
+import { FormEvent, useState, useRef, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -26,9 +26,11 @@ function Spinner() {
 export default function AdminPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const [authed, setAuthed] = useState(
-    () => !!sessionStorage.getItem(`admin_${id}`)
-  );
+  const [authed, setAuthed] = useState(false);
+
+  useEffect(() => {
+    setAuthed(!!sessionStorage.getItem(`admin_${id}`));
+  }, [id]);
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
   const [newPlayer, setNewPlayer] = useState("");
@@ -79,7 +81,7 @@ export default function AdminPage() {
       return;
     }
 
-    // Client-side check: 200-photo draft limit
+    // Client-side check: 200-photo draft limit — truncate instead of hard-failing
     const remaining = 200 - photos.length;
     if (remaining <= 0) {
       setMsg({ text: "This draft already has 200 photos — delete some before uploading more", ok: false });
@@ -87,24 +89,24 @@ export default function AdminPage() {
       fileRef.current.value = "";
       return;
     }
-    if (files.length > remaining) {
-      setMsg({ text: `Can only add ${remaining} more photo${remaining !== 1 ? "s" : ""} (max 200 per draft)`, ok: false });
-      setTimeout(() => setMsg(null), 6000);
-      fileRef.current.value = "";
-      return;
+    const uploadFiles = files.length > remaining ? files.slice(0, remaining) : files;
+    if (uploadFiles.length < files.length) {
+      setMsg({ text: `Only ${remaining} slot${remaining !== 1 ? "s" : ""} remaining — uploading ${uploadFiles.length} of ${files.length}`, ok: true });
+      setTimeout(() => setMsg(null), 4000);
     }
 
     try {
-      setUploadProgress({ done: 0, total: files.length });
+      setUploadProgress({ done: 0, total: uploadFiles.length });
       const results: PhotoUploadResult[] = [];
-      for (let i = 0; i < files.length; i++) {
-        const result = await api.uploadPhoto(id, files[i]);
+      for (let i = 0; i < uploadFiles.length; i++) {
+        const result = await api.uploadPhoto(id, uploadFiles[i]);
         results.push(result);
-        setUploadProgress({ done: i + 1, total: files.length });
+        setUploadProgress({ done: i + 1, total: uploadFiles.length });
       }
       queryClient.invalidateQueries({ queryKey: ["session", id] });
       setUploadProgress(null);
-      // Check for per-file errors in the server response
+
+      // Categorise results
       type ErrorResult = { filename: string; error: string };
       type SkippedResult = { filename: string; status: string };
       const isError = (r: PhotoUploadResult): r is ErrorResult =>
@@ -114,25 +116,29 @@ export default function AdminPage() {
       const isSuccess = (r: PhotoUploadResult): r is Photo => "id" in r && typeof (r as Photo).id === "string";
       const errors = results.filter(isError);
       const skipped = results.filter(isSkipped);
+      const duplicates = results.filter((r) => isSkipped(r) && (r as SkippedResult).status === "already exists");
+      const otherSkipped = results.filter((r) => isSkipped(r) && (r as SkippedResult).status !== "already exists");
       const succeeded = results.filter(isSuccess);
 
       const parts: string[] = [];
       if (succeeded.length > 0) parts.push(`${succeeded.length} uploaded`);
-      if (skipped.length > 0) parts.push(`${skipped.length} skipped`);
+      if (duplicates.length > 0) parts.push(`${duplicates.length} already exist${duplicates.length === 1 ? "s" : ""}`);
+      if (otherSkipped.length > 0) parts.push(`${otherSkipped.length} skipped`);
       if (errors.length > 0) {
-        const summary = errors.slice(0, 2).map((e) => `${e.filename}: ${e.error}`).join("; ");
-        const suffix = errors.length > 2 ? ` (+${errors.length - 2} more)` : "";
-        parts.push(`${summary}${suffix}`);
+        const summary = errors.map((e) => (e as ErrorResult).filename).join(", ");
+        parts.push(`${summary} failed`);
       }
       const hasIssues = errors.length > 0 || skipped.length > 0;
       setMsg({ text: parts.join(" — "), ok: !hasIssues });
+
+      // Clear on success; errors are sticky until next action
+      if (!hasIssues) setTimeout(() => setMsg(null), 5000);
     } catch (err) {
       setUploadProgress(null);
       const message = err instanceof Error ? err.message : "Upload failed";
       setMsg({ text: message, ok: false });
     }
     fileRef.current.value = "";
-    setTimeout(() => setMsg(null), 6000);
   }
 
   async function onAddPlayer(e: FormEvent) {

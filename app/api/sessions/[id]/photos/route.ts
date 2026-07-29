@@ -56,8 +56,14 @@ export async function POST(
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const results = [];
+  let hasFatal = false;
 
   for (const [i, file] of files.entries()) {
+    if (hasFatal) {
+      results.push({ filename: file.name, status: "skipped" });
+      continue;
+    }
+
     if (existingFilenames.has(file.name)) {
       results.push({ filename: file.name, status: "already exists" });
       continue;
@@ -75,12 +81,19 @@ export async function POST(
     };
     const contentType = file.type || mimeMap[ext] || "application/octet-stream";
 
-    const { error: uploadError } = await supabase.storage
+    const { data: uploaded, error: uploadError } = await supabase.storage
       .from("photos")
-      .upload(storagePath, file, { contentType });
+      .upload(storagePath, file, { contentType, upsert: true });
 
     if (uploadError) {
-      results.push({ filename: file.name, error: uploadError.message });
+      const status = (uploadError as any).statusCode ?? (uploadError as any).status ?? "?";
+      const detail = { status, message: uploadError.message };
+      // Log the full error for debugging
+      console.error(`[photo-vote] upload failed: ${JSON.stringify({ session: id, file: file.name, storagePath, ...detail, contentType, fileSize: file.size })}`);
+      results.push({ filename: file.name, error: uploadError.message, statusCode: typeof status === "number" ? status : 500 });
+
+      // Fatal errors — subsequent uploads in this batch will also fail
+      if (status === 403 || status === 401) hasFatal = true;
       continue;
     }
 
@@ -91,6 +104,8 @@ export async function POST(
       .single();
 
     if (dbError) {
+      // DB insert failed — storage succeeded, log but continue
+      console.error(`[photo-vote] db insert failed: ${JSON.stringify({ session: id, file: file.name, storagePath, error: dbError.message })}`);
       results.push({ filename: file.name, error: dbError.message });
       continue;
     }
