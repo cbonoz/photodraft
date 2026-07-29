@@ -15,9 +15,9 @@
   --elevated: #f8f9f0;
   --elevated2: #eceddf;
   --border: #d8d9ce;
-  --text: #1a1a24;
-  --text-secondary: #5a5b68;
-  --text-muted: #9a9ba8;
+  --text: #000000;
+  --text-secondary: #2a2a3a;
+  --text-muted: #5a5a6a;
 }
 
 .dark {
@@ -27,9 +27,9 @@
   --elevated: #0a0a12;
   --elevated2: #1a1a2e;
   --border: #2a2a3e;
-  --text: #f0f0f5;
-  --text-secondary: #c8c8d8;
-  --text-muted: #808090;
+  --text: #ffffff;
+  --text-secondary: #e0e0f0;
+  --text-muted: #b0b0c0;
 }
 
 body {
