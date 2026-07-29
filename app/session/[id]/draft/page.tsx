@@ -84,6 +84,7 @@ export default function DraftPage() {
   const resumeMutation = useResumeDraft(id);
   const [message, setMessage] = useState("");
   const [pendingPhoto, setPendingPhoto] = useState<Photo | null>(null);
+  const [copied, setCopied] = useState(false);
 
   if (isLoading) return <Spinner />;
 
@@ -140,7 +141,6 @@ export default function DraftPage() {
   const draftPaused = !session.closed && picks.length > 0 && !draftComplete;
 
   const csvUrl = `/api/sessions/${id}/draft/export`;
-  const [copied, setCopied] = useState(false);
 
   async function copyShareLink() {
     await navigator.clipboard.writeText(window.location.href);
