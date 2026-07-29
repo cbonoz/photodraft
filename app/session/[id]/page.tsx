@@ -142,34 +142,42 @@ export default function AdminPage() {
   if (!authed) {
     return (
       <main className="flex flex-col items-center justify-center min-h-screen p-8">
-        <h1 className="text-3xl font-bold mb-8 text-[var(--text)]">Admin</h1>
+        <a
+          href="/"
+          className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] text-sm transition-colors mb-8"
+        >
+          &larr; Home
+        </a>
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-[var(--text)] mb-2">
+            {isLoading ? "Draft" : session?.title ?? "Draft"}
+          </h1>
+          <p className="text-[var(--text-muted)] text-sm">
+            Enter the admin password to manage photos, players, and settings.
+          </p>
+        </div>
         <form
           onSubmit={(e) => { e.preventDefault(); login(); }}
-          className="flex gap-3 w-full max-w-sm"
+          className="flex flex-col gap-3 w-full max-w-sm"
         >
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Admin password"
-            className="flex-1 px-4 py-3 rounded-xl bg-[var(--surface)] border border-[var(--border)] focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-colors placeholder:text-[var(--text-muted)]"
+            className="w-full px-4 py-3 rounded-xl bg-[var(--surface)] border border-[var(--border)] focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-colors placeholder:text-[var(--text-muted)]"
             required
+            autoFocus
           />
+          {authError && <p className="text-red-400 text-sm text-center">{authError}</p>}
           <button
             type="submit"
             disabled={verifyMutation.isPending}
-            className="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold hover:from-cyan-400 hover:to-blue-500 disabled:opacity-50 transition-all"
+            className="w-full px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold hover:from-cyan-400 hover:to-blue-500 disabled:opacity-50 transition-all"
           >
-            {verifyMutation.isPending ? "..." : "Enter"}
+            {verifyMutation.isPending ? "Checking..." : "Enter Admin"}
           </button>
         </form>
-        {authError && <p className="text-red-400 mt-3 text-sm">{authError}</p>}
-        <a
-          href="/"
-          className="text-[var(--text-muted)] text-sm mt-6 hover:text-[var(--text-secondary)] transition-colors"
-        >
-          &larr; Back to home
-        </a>
       </main>
     );
   }
