@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as api from "./api";
+import type { PhotoUploadResult } from "./api";
 
 export function useSession(id: string) {
   return useQuery({
@@ -23,7 +24,15 @@ export function useCreateSession() {
 export function useUploadPhotos(sessionId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (files: File[]) => api.uploadPhotos(sessionId, files),
+    mutationFn: async (files: File[]) => {
+      const results: PhotoUploadResult[] = [];
+      for (const file of files) {
+        const result = await api.uploadPhoto(sessionId, file);
+        results.push(result);
+      }
+      return results;
+    },
+    mutationKey: ["upload", sessionId],
     onSuccess: () => qc.invalidateQueries({ queryKey: ["session", sessionId] }),
   });
 }

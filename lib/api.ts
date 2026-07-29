@@ -52,12 +52,12 @@ export async function createSession(title: string, password: string): Promise<Se
   return data.session;
 }
 
-export async function uploadPhotos(
+export async function uploadPhoto(
   sessionId: string,
-  files: File[]
-): Promise<PhotoUploadResult[]> {
+  file: File
+): Promise<PhotoUploadResult> {
   const fd = new FormData();
-  for (const f of files) fd.append("files", f);
+  fd.append("files", file);
   const res = await fetch(`/api/sessions/${sessionId}/photos`, {
     method: "POST",
     body: fd,
@@ -70,7 +70,7 @@ export async function uploadPhotos(
     data = { error: text || `Upload failed (HTTP ${res.status})` };
   }
   if (!res.ok) throw new Error(data.error || `Upload failed (HTTP ${res.status})`);
-  return data.photos ?? [];
+  return (data.photos ?? [])[0];
 }
 
 export async function deletePhoto(

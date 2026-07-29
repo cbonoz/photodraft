@@ -2,9 +2,9 @@
 
 import { FormEvent, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   useSession,
-  useUploadPhotos,
   useDeletePhoto,
   useAddPlayer,
   useRemovePlayer,
@@ -13,6 +13,7 @@ import {
   useVerifyAdmin,
 } from "@/lib/hooks";
 import type { PhotoUploadResult } from "@/lib/api";
+import * as api from "@/lib/api";
 
 function Spinner() {
   return (
@@ -33,8 +34,10 @@ export default function AdminPage() {
   const [newPlayer, setNewPlayer] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
 
+  const [uploadProgress, setUploadProgress] = useState<{ done: number; total: number } | null>(null);
+
   const { data, isLoading } = useSession(id);
-  const uploadMutation = useUploadPhotos(id);
+  const queryClient = useQueryClient();
   const deleteMutation = useDeletePhoto(id);
   const addPlayer = useAddPlayer(id);
   const removePlayer = useRemovePlayer(id);
@@ -91,11 +94,19 @@ export default function AdminPage() {
     }
 
     try {
-      const result = await uploadMutation.mutateAsync(files);
+      setUploadProgress({ done: 0, total: files.length });
+      const results: PhotoUploadResult[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const result = await api.uploadPhoto(id, files[i]);
+        results.push(result);
+        setUploadProgress({ done: i + 1, total: files.length });
+      }
+      queryClient.invalidateQueries({ queryKey: ["session", id] });
+      setUploadProgress(null);
       // Check for per-file errors in the server response
       const hasError = (r: PhotoUploadResult): r is { filename: string; error: string } =>
         "error" in r && typeof r.error === "string";
-      const errors = (result ?? []).filter(hasError);
+      const errors = (results ?? []).filter(hasError);
       if (errors.length > 0) {
         const summary = errors
           .slice(0, 3)
@@ -107,6 +118,7 @@ export default function AdminPage() {
         setMsg({ text: `Uploaded ${files.length} photo(s)`, ok: true });
       }
     } catch (err) {
+      setUploadProgress(null);
       const message = err instanceof Error ? err.message : "Upload failed";
       setMsg({ text: message, ok: false });
     }
@@ -226,10 +238,12 @@ export default function AdminPage() {
               />
               <button
                 type="submit"
-                disabled={uploadMutation.isPending}
+                disabled={uploadProgress !== null}
                 className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-medium hover:from-cyan-400 hover:to-blue-500 disabled:opacity-50 transition-all whitespace-nowrap"
               >
-                {uploadMutation.isPending ? "..." : "Upload"}
+                {uploadProgress !== null
+                  ? `${uploadProgress.done} / ${uploadProgress.total}`
+                  : "Upload"}
               </button>
             </form>
           )}
