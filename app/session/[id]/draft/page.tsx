@@ -140,6 +140,13 @@ export default function DraftPage() {
   const draftPaused = !session.closed && picks.length > 0 && !draftComplete;
 
   const csvUrl = `/api/sessions/${id}/draft/export`;
+  const [copied, setCopied] = useState(false);
+
+  async function copyShareLink() {
+    await navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
 
   return (
     <main className="max-w-7xl mx-auto p-6">
@@ -153,19 +160,30 @@ export default function DraftPage() {
         <h1 className="text-xl font-bold text-[var(--text)]">
           {session.title}
         </h1>
-        {draftComplete ? (
-          <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-900/50 text-emerald-300 border border-emerald-700/50">
-            Complete
-          </span>
-        ) : draftPaused ? (
-          <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-amber-900/50 text-amber-300 border border-amber-700/50">
-            Paused
-          </span>
-        ) : (
-          <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-amber-900/50 text-amber-300 border border-amber-700/50">
-            Pick {picks.length + 1} of {allPhotos.length}
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={copyShareLink}
+            className="px-3 py-1.5 rounded-xl bg-[var(--surface-hover)] text-[var(--text-secondary)] text-xs font-medium hover:bg-[var(--elevated2)] transition-all border border-[var(--border)] flex items-center gap-1.5"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
+            </svg>
+            {copied ? "Copied!" : "Share"}
+          </button>
+          {draftComplete ? (
+            <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-900/50 text-emerald-300 border border-emerald-700/50">
+              Complete
+            </span>
+          ) : draftPaused ? (
+            <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-amber-900/50 text-amber-300 border border-amber-700/50">
+              Paused
+            </span>
+          ) : (
+            <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-amber-900/50 text-amber-300 border border-amber-700/50">
+              Pick {picks.length + 1} of {allPhotos.length}
+            </span>
+          )}
+        </div>
       </div>
 
       {pendingPhoto && currentPlayer && (
