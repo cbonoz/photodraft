@@ -15,6 +15,27 @@ export async function POST(
   if (!files.length)
     return NextResponse.json({ error: "No files" }, { status: 400 });
 
+  // Enforce 200-photo limit per draft
+  const { count } = await supabase
+    .from("photos")
+    .select("*", { count: "exact", head: true })
+    .eq("session_id", id);
+
+  const currentCount = count ?? 0;
+  const remaining = 200 - currentCount;
+  if (remaining <= 0) {
+    return NextResponse.json(
+      { error: "This draft already has 200 photos — delete some before uploading more" },
+      { status: 400 }
+    );
+  }
+  if (files.length > remaining) {
+    return NextResponse.json(
+      { error: `Only ${remaining} slot${remaining !== 1 ? "s" : ""} remaining (max 200 per draft, you tried to add ${files.length})` },
+      { status: 400 }
+    );
+  }
+
   // Client should already enforce this, but defend the server too
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB per Supabase bucket limit
   for (const file of files) {
@@ -32,11 +53,6 @@ export async function POST(
     .eq("session_id", id);
 
   const existingFilenames = new Set((existingPhotos ?? []).map((p) => p.filename));
-
-  const { count } = await supabase
-    .from("photos")
-    .select("*", { count: "exact", head: true })
-    .eq("session_id", id);
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const results = [];

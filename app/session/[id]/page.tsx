@@ -75,6 +75,21 @@ export default function AdminPage() {
       return;
     }
 
+    // Client-side check: 200-photo draft limit
+    const remaining = 200 - photos.length;
+    if (remaining <= 0) {
+      setMsg({ text: "This draft already has 200 photos — delete some before uploading more", ok: false });
+      setTimeout(() => setMsg(null), 6000);
+      fileRef.current.value = "";
+      return;
+    }
+    if (files.length > remaining) {
+      setMsg({ text: `Can only add ${remaining} more photo${remaining !== 1 ? "s" : ""} (max 200 per draft)`, ok: false });
+      setTimeout(() => setMsg(null), 6000);
+      fileRef.current.value = "";
+      return;
+    }
+
     try {
       const result = await uploadMutation.mutateAsync(files);
       // Check for per-file errors in the server response
@@ -167,7 +182,7 @@ export default function AdminPage() {
             {session.title}
           </h1>
           <p className="text-[var(--text-muted)] text-sm mt-1">
-            {photos.length} photo{photos.length !== 1 && "s"}
+            {photos.length} / 200 photo{photos.length !== 1 && "s"}
             {players.length > 0 &&
               <> &middot; {players.length} player{players.length !== 1 && "s"}</>}
             {picks.length > 0 &&
