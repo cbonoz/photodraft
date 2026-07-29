@@ -104,9 +104,13 @@ export default function AdminPage() {
       queryClient.invalidateQueries({ queryKey: ["session", id] });
       setUploadProgress(null);
       // Check for per-file errors in the server response
-      const isError = (r: PhotoUploadResult) => "error" in r && typeof r.error === "string";
-      const isSkipped = (r: PhotoUploadResult) => "status" in r && typeof r.status === "string";
-      const isSuccess = (r: PhotoUploadResult): r is Photo => "id" in r && typeof r.id === "string";
+      type ErrorResult = { filename: string; error: string };
+      type SkippedResult = { filename: string; status: string };
+      const isError = (r: PhotoUploadResult): r is ErrorResult =>
+        "error" in r && typeof (r as ErrorResult).error === "string";
+      const isSkipped = (r: PhotoUploadResult): r is SkippedResult =>
+        "status" in r && typeof (r as SkippedResult).status === "string";
+      const isSuccess = (r: PhotoUploadResult): r is Photo => "id" in r && typeof (r as Photo).id === "string";
       const errors = results.filter(isError);
       const skipped = results.filter(isSkipped);
       const succeeded = results.filter(isSuccess);
