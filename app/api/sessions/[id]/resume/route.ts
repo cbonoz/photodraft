@@ -2,18 +2,17 @@ import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase/server";
 
 export async function POST(
-  req: Request,
+  _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
   const supabase = getSupabase();
-  const { photoId } = await req.json();
 
-  if (!photoId) {
-    return NextResponse.json({ error: "photoId required" }, { status: 400 });
-  }
+  const { error } = await supabase
+    .from("sessions")
+    .update({ closed: true })
+    .eq("id", id);
 
-  await supabase.from("picks").delete().eq("photo_id", photoId).eq("session_id", id);
-
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ success: true });
 }

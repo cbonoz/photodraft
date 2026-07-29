@@ -150,6 +150,13 @@ export async function returnPhoto(sessionId: string, photoId: string): Promise<{
   return data;
 }
 
+export async function resumeDraft(sessionId: string): Promise<void> {
+  const res = await fetch(`/api/sessions/${sessionId}/resume`, {
+    method: "POST",
+  });
+  if (!res.ok) throw new Error("Failed to resume");
+}
+
 export async function resetDraft(sessionId: string): Promise<void> {
   const res = await fetch(`/api/sessions/${sessionId}/reset`, {
     method: "POST",

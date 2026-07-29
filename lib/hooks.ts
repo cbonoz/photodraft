@@ -84,6 +84,14 @@ export function useReturnPhoto(sessionId: string) {
   });
 }
 
+export function useResumeDraft(sessionId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.resumeDraft(sessionId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["session", sessionId] }),
+  });
+}
+
 export function useResetDraft(sessionId: string) {
   const qc = useQueryClient();
   return useMutation({

@@ -7,6 +7,7 @@ import {
   usePickPhoto,
   useReturnPhoto,
   useResetDraft,
+  useResumeDraft,
 } from "@/lib/hooks";
 import type { Photo } from "@/lib/api";
 
@@ -34,7 +35,10 @@ function PickModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-fade-in">
       <div className="bg-[#12121a] border border-[#2a2a3e] rounded-2xl w-[90vw] max-w-[700px] overflow-hidden shadow-2xl">
-        <div className="flex items-center justify-center bg-[#0a0a12]" style={{ height: '70vh', maxHeight: '600px' }}>
+        <div
+          className="flex items-center justify-center bg-[#0a0a12]"
+          style={{ height: "70vh", maxHeight: "600px" }}
+        >
           <img
             src={photo.url}
             alt=""
@@ -77,6 +81,7 @@ export default function DraftPage() {
   const pickMutation = usePickPhoto(id);
   const returnMutation = useReturnPhoto(id);
   const resetMutation = useResetDraft(id);
+  const resumeMutation = useResumeDraft(id);
   const [message, setMessage] = useState("");
   const [pendingPhoto, setPendingPhoto] = useState<Photo | null>(null);
 
@@ -132,6 +137,9 @@ export default function DraftPage() {
   }
 
   const draftComplete = available.length === 0;
+  const draftPaused = !session.closed && picks.length > 0 && !draftComplete;
+
+  const csvUrl = `/api/sessions/${id}/draft/export`;
 
   return (
     <main className="max-w-7xl mx-auto p-6">
@@ -148,6 +156,10 @@ export default function DraftPage() {
         {draftComplete ? (
           <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-900/50 text-emerald-300 border border-emerald-700/50">
             Complete
+          </span>
+        ) : draftPaused ? (
+          <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-amber-900/50 text-amber-300 border border-amber-700/50">
+            Paused
           </span>
         ) : (
           <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-amber-900/50 text-amber-300 border border-amber-700/50">
@@ -166,25 +178,54 @@ export default function DraftPage() {
         />
       )}
 
-      {draftComplete ? (
+      {draftComplete || draftPaused ? (
         <>
           <div className="text-center mb-10">
             <div className="inline-flex items-center gap-3 mb-3">
-              <div className="w-3 h-3 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/30" />
-              <h2 className="text-4xl font-bold bg-gradient-to-r from-emerald-400 to-emerald-300 bg-clip-text text-transparent">
-                Draft Complete!
+              <div
+                className={`w-3 h-3 rounded-full shadow-lg ${
+                  draftComplete
+                    ? "bg-emerald-400 shadow-emerald-400/30"
+                    : "bg-amber-400 shadow-amber-400/30"
+                }`}
+              />
+              <h2
+                className={`text-4xl font-bold bg-clip-text text-transparent ${
+                  draftComplete
+                    ? "bg-gradient-to-r from-emerald-400 to-emerald-300"
+                    : "bg-gradient-to-r from-amber-400 to-amber-300"
+                }`}
+              >
+                {draftComplete ? "Draft Complete!" : "Draft Paused"}
               </h2>
             </div>
             <p className="text-neutral-500 mb-6">
-              All {allPhotos.length} photos have been picked.
+              {draftComplete
+                ? `All ${allPhotos.length} photos have been picked.`
+                : `${available.length} photo(s) returned to pool. Resume to continue.`}
             </p>
             <div className="flex justify-center gap-4">
               <button
                 onClick={() => router.push(`/session/${id}`)}
-                className="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium hover:from-cyan-400 hover:to-blue-500 transition-all"
+                className="px-6 py-3 rounded-xl bg-[#1c1c2e] text-neutral-300 font-medium hover:bg-[#252540] transition-all border border-[#2a2a3e]"
               >
                 Back to Admin
               </button>
+              <a
+                href={csvUrl}
+                className="px-6 py-3 rounded-xl bg-[#1c1c2e] text-neutral-300 font-medium hover:bg-[#252540] transition-all border border-[#2a2a3e]"
+              >
+                Download CSV
+              </a>
+              {draftPaused && (
+                <button
+                  onClick={() => resumeMutation.mutate()}
+                  disabled={resumeMutation.isPending}
+                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium hover:from-cyan-400 hover:to-blue-500 disabled:opacity-50 transition-all"
+                >
+                  {resumeMutation.isPending ? "..." : "Resume Draft"}
+                </button>
+              )}
               <button
                 onClick={() => {
                   if (window.confirm("Reset all picks and start over?"))
