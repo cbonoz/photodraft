@@ -59,6 +59,12 @@ export default function HomePage() {
           {isPending ? "Creating..." : "Create Draft"}
         </button>
       </form>
+      <a
+        href="/about"
+        className="text-[var(--text-muted)] text-xs mt-6 hover:text-[var(--text-secondary)] transition-colors underline underline-offset-2"
+      >
+        How PhotoDraft works &rarr;
+      </a>
     </main>
   );
 }
