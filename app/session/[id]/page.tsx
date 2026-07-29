@@ -117,7 +117,7 @@ export default function AdminPage() {
   }
 
   if (isLoading) return <Spinner />;
-  if (!session) return <div className="p-8 text-[var(--text)]">Session not found</div>;
+  if (!session) return <div className="p-8 text-[var(--text)]">Draft not found</div>;
 
   const draftComplete = picks.length > 0 && picks.length === photos.length;
   const draftActive = session.closed && !draftComplete;

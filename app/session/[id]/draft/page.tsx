@@ -92,7 +92,7 @@ export default function DraftPage() {
   const players = data?.players ?? [];
   const picks = data?.picks ?? [];
 
-  if (!session) return <div className="p-8 text-[var(--text)]">Session not found</div>;
+  if (!session) return <div className="p-8 text-[var(--text)]">Draft not found</div>;
 
   if (!session.closed && picks.length === 0) {
     return (
