@@ -12,7 +12,7 @@ import {
   useResetDraft,
   useVerifyAdmin,
 } from "@/lib/hooks";
-import type { PhotoUploadResult } from "@/lib/api";
+import type { Photo, PhotoUploadResult } from "@/lib/api";
 import * as api from "@/lib/api";
 
 function Spinner() {
@@ -104,19 +104,23 @@ export default function AdminPage() {
       queryClient.invalidateQueries({ queryKey: ["session", id] });
       setUploadProgress(null);
       // Check for per-file errors in the server response
-      const hasError = (r: PhotoUploadResult): r is { filename: string; error: string } =>
-        "error" in r && typeof r.error === "string";
-      const errors = (results ?? []).filter(hasError);
+      const isError = (r: PhotoUploadResult) => "error" in r && typeof r.error === "string";
+      const isSkipped = (r: PhotoUploadResult) => "status" in r && typeof r.status === "string";
+      const isSuccess = (r: PhotoUploadResult): r is Photo => "id" in r && typeof r.id === "string";
+      const errors = results.filter(isError);
+      const skipped = results.filter(isSkipped);
+      const succeeded = results.filter(isSuccess);
+
+      const parts: string[] = [];
+      if (succeeded.length > 0) parts.push(`${succeeded.length} uploaded`);
+      if (skipped.length > 0) parts.push(`${skipped.length} skipped`);
       if (errors.length > 0) {
-        const summary = errors
-          .slice(0, 3)
-          .map((e) => `${e.filename}: ${e.error}`)
-          .join("; ");
-        const suffix = errors.length > 3 ? ` (+${errors.length - 3} more)` : "";
-        setMsg({ text: `Uploaded ${files.length - errors.length}/${files.length} — ${summary}${suffix}`, ok: false });
-      } else {
-        setMsg({ text: `Uploaded ${files.length} photo(s)`, ok: true });
+        const summary = errors.slice(0, 2).map((e) => `${e.filename}: ${e.error}`).join("; ");
+        const suffix = errors.length > 2 ? ` (+${errors.length - 2} more)` : "";
+        parts.push(`${summary}${suffix}`);
       }
+      const hasIssues = errors.length > 0 || skipped.length > 0;
+      setMsg({ text: parts.join(" — "), ok: !hasIssues });
     } catch (err) {
       setUploadProgress(null);
       const message = err instanceof Error ? err.message : "Upload failed";
