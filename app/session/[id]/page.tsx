@@ -273,8 +273,8 @@ export default function AdminPage() {
       <div className="flex justify-center gap-4">
         {photos.length > 0 && players.length > 0 && !session.closed && (
           <button
-            onClick={async () => {
-              await startMutation.mutateAsync();
+            onClick={() => {
+              startMutation.mutate();
               router.push(`/session/${id}/draft`);
             }}
             disabled={startMutation.isPending}

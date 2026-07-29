@@ -33,8 +33,8 @@ function PickModal({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-fade-in">
-      <div className="bg-[#12121a] border border-[#2a2a3e] rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl">
-        <div className="aspect-square bg-[#0a0a12]">
+      <div className="bg-[#12121a] border border-[#2a2a3e] rounded-2xl w-[90vw] max-w-[700px] overflow-hidden shadow-2xl">
+        <div className="flex items-center justify-center bg-[#0a0a12]" style={{ height: '70vh', maxHeight: '600px' }}>
           <img
             src={photo.url}
             alt=""
