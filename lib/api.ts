@@ -13,6 +13,8 @@ export interface Photo {
   sort_order: number;
 }
 
+export type PhotoUploadResult = Photo | { filename: string; error: string } | { filename: string; status: string };
+
 export interface Player {
   id: string;
   name: string;
@@ -53,16 +55,22 @@ export async function createSession(title: string, password: string): Promise<Se
 export async function uploadPhotos(
   sessionId: string,
   files: File[]
-): Promise<Photo[]> {
+): Promise<PhotoUploadResult[]> {
   const fd = new FormData();
   for (const f of files) fd.append("files", f);
   const res = await fetch(`/api/sessions/${sessionId}/photos`, {
     method: "POST",
     body: fd,
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error);
-  return data.photos;
+  const text = await res.text();
+  let data: { photos?: PhotoUploadResult[]; error?: string };
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = { error: text || `Upload failed (HTTP ${res.status})` };
+  }
+  if (!res.ok) throw new Error(data.error || `Upload failed (HTTP ${res.status})`);
+  return data.photos ?? [];
 }
 
 export async function deletePhoto(

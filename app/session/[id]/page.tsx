@@ -12,6 +12,7 @@ import {
   useResetDraft,
   useVerifyAdmin,
 } from "@/lib/hooks";
+import type { PhotoUploadResult } from "@/lib/api";
 
 function Spinner() {
   return (
@@ -62,10 +63,40 @@ export default function AdminPage() {
     e.preventDefault();
     if (!fileRef.current?.files?.length) return;
     const files = Array.from(fileRef.current.files);
-    await uploadMutation.mutateAsync(files);
+
+    // Client-side validation: check file sizes before sending
+    const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+    const oversized = files.filter((f) => f.size > MAX_SIZE);
+    if (oversized.length > 0) {
+      const names = oversized.map((f) => `"${f.name}"`).join(", ");
+      setMsg({ text: `${names} ${oversized.length === 1 ? "is" : "are"} too large (max 10MB per file)`, ok: false });
+      setTimeout(() => setMsg(null), 6000);
+      fileRef.current.value = "";
+      return;
+    }
+
+    try {
+      const result = await uploadMutation.mutateAsync(files);
+      // Check for per-file errors in the server response
+      const hasError = (r: PhotoUploadResult): r is { filename: string; error: string } =>
+        "error" in r && typeof r.error === "string";
+      const errors = (result ?? []).filter(hasError);
+      if (errors.length > 0) {
+        const summary = errors
+          .slice(0, 3)
+          .map((e) => `${e.filename}: ${e.error}`)
+          .join("; ");
+        const suffix = errors.length > 3 ? ` (+${errors.length - 3} more)` : "";
+        setMsg({ text: `Uploaded ${files.length - errors.length}/${files.length} — ${summary}${suffix}`, ok: false });
+      } else {
+        setMsg({ text: `Uploaded ${files.length} photo(s)`, ok: true });
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Upload failed";
+      setMsg({ text: message, ok: false });
+    }
     fileRef.current.value = "";
-    setMsg({ text: `Uploaded ${files.length} photo(s)`, ok: true });
-    setTimeout(() => setMsg(null), 3000);
+    setTimeout(() => setMsg(null), 6000);
   }
 
   async function onAddPlayer(e: FormEvent) {

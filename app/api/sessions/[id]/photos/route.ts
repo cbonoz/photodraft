@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase/server";
 
+export const runtime = "nodejs";
+
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -12,6 +14,17 @@ export async function POST(
   const files = formData.getAll("files") as File[];
   if (!files.length)
     return NextResponse.json({ error: "No files" }, { status: 400 });
+
+  // Client should already enforce this, but defend the server too
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB per Supabase bucket limit
+  for (const file of files) {
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: `"${file.name}" exceeds the 10MB file size limit` },
+        { status: 400 }
+      );
+    }
+  }
 
   const { data: existingPhotos } = await supabase
     .from("photos")
