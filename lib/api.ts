@@ -139,6 +139,17 @@ export async function reorderPhotos(
   if (!res.ok) throw new Error("Failed to reorder");
 }
 
+export async function returnPhoto(sessionId: string, photoId: string): Promise<{ currentPlayer: { id: string; name: string } | null }> {
+  const res = await fetch(`/api/sessions/${sessionId}/return`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ photoId }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error);
+  return data;
+}
+
 export async function resetDraft(sessionId: string): Promise<void> {
   const res = await fetch(`/api/sessions/${sessionId}/reset`, {
     method: "POST",

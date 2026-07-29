@@ -4,7 +4,7 @@ import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "PhotoDraft",
-  description: "Vote on photos and distribute them fairly",
+  description: "Draft photos turn by turn",
 };
 
 export default function RootLayout({

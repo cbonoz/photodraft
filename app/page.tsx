@@ -13,7 +13,10 @@ export default function HomePage() {
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     if (!title.trim()) return;
-    const session = await mutateAsync({ title: title.trim(), password: password.trim() });
+    const session = await mutateAsync({
+      title: title.trim(),
+      password: password.trim(),
+    });
     router.push(`/session/${session.id}`);
   }
 
@@ -35,7 +38,7 @@ export default function HomePage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           type="password"
-          placeholder="Admin password (for managing session)"
+          placeholder="Admin password"
           className="w-full px-4 py-3 rounded-lg bg-neutral-800 border border-neutral-700 focus:outline-none focus:border-neutral-500"
           required
         />
@@ -44,7 +47,7 @@ export default function HomePage() {
           disabled={isPending}
           className="w-full px-6 py-3 rounded-lg bg-white text-neutral-900 font-semibold hover:bg-neutral-200 disabled:opacity-50 transition-colors"
         >
-          {isPending ? "..." : "Create Session"}
+          {isPending ? "Creating..." : "Create Session"}
         </button>
       </form>
     </main>

@@ -76,6 +76,14 @@ export function useReorderPhotos(sessionId: string) {
   });
 }
 
+export function useReturnPhoto(sessionId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (photoId: string) => api.returnPhoto(sessionId, photoId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["session", sessionId] }),
+  });
+}
+
 export function useResetDraft(sessionId: string) {
   const qc = useQueryClient();
   return useMutation({

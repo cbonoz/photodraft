@@ -35,8 +35,10 @@ export async function GET(
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 
+  const { admin_password, ...safeSession } = session;
+
   return NextResponse.json({
-    session,
+    session: safeSession,
     photos: (photos ?? []).map((p) => ({
       ...p,
       url: `${supabaseUrl}/storage/v1/object/public/photos/${p.path}`,
