@@ -8,13 +8,16 @@ export async function POST(
   const { id } = await params;
   const supabase = getSupabase();
 
-  await supabase.from("picks").delete().eq("session_id", id);
-
-  const { error } = await supabase
+  // Reset session first so it's always in a valid state
+  const { error: sessionError } = await supabase
     .from("sessions")
     .update({ closed: false, current_turn: 0 })
     .eq("id", id);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (sessionError) return NextResponse.json({ error: sessionError.message }, { status: 500 });
+
+  // Then clear picks — if this fails, session is already reset
+  await supabase.from("picks").delete().eq("session_id", id);
+
   return NextResponse.json({ success: true });
 }
