@@ -116,6 +116,18 @@ export async function startDraft(sessionId: string): Promise<void> {
   if (!res.ok) throw new Error("Failed to start");
 }
 
+export async function skipTurn(sessionId: string): Promise<{
+  skippedPlayer: { id: string; name: string };
+  currentPlayer: { id: string; name: string };
+}> {
+  const res = await fetch(`/api/sessions/${sessionId}/skip`, {
+    method: "POST",
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error);
+  return data;
+}
+
 export async function pickPhoto(
   sessionId: string,
   photoId: string

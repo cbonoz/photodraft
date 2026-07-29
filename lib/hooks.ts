@@ -69,6 +69,14 @@ export function useStartDraft(sessionId: string) {
   });
 }
 
+export function useSkipTurn(sessionId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.skipTurn(sessionId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["session", sessionId] }),
+  });
+}
+
 export function usePickPhoto(sessionId: string) {
   const qc = useQueryClient();
   return useMutation({

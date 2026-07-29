@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import {
   useSession,
   usePickPhoto,
+  useSkipTurn,
   useReturnPhoto,
   useResetDraft,
   useResumeDraft,
@@ -79,6 +80,7 @@ export default function DraftPage() {
   const router = useRouter();
   const { data, isLoading } = useSession(id);
   const pickMutation = usePickPhoto(id);
+  const skipMutation = useSkipTurn(id);
   const returnMutation = useReturnPhoto(id);
   const resetMutation = useResetDraft(id);
   const resumeMutation = useResumeDraft(id);
@@ -312,6 +314,16 @@ export default function DraftPage() {
               </span>
               {"'"}s turn to pick
             </p>
+            <button
+              onClick={() => {
+                if (window.confirm(`Skip ${currentPlayer?.name}'s turn?`))
+                  skipMutation.mutate();
+              }}
+              disabled={skipMutation.isPending}
+              className="mt-3 px-4 py-2 rounded-xl bg-[var(--surface-hover)] text-[var(--text-secondary)] text-sm font-medium hover:bg-[var(--elevated2)] disabled:opacity-50 transition-all border border-[var(--border)]"
+            >
+              {skipMutation.isPending ? "Skipping..." : "Skip turn"}
+            </button>
           </div>
 
           {message && (
