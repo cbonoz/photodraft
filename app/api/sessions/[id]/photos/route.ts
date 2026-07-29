@@ -63,12 +63,21 @@ export async function POST(
       continue;
     }
 
-    const ext = file.name.split(".").pop() ?? "jpg";
+    const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
     const storagePath = `${id}/${crypto.randomUUID()}.${ext}`;
+
+    // Infer MIME from extension when browser doesn't send it (e.g. .jpeg → image/jpeg)
+    const mimeMap: Record<string, string> = {
+      jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png",
+      gif: "image/gif", webp: "image/webp", heic: "image/heic",
+      heif: "image/heif", avif: "image/avif", tiff: "image/tiff",
+      tif: "image/tiff", bmp: "image/bmp", svg: "image/svg+xml",
+    };
+    const contentType = file.type || mimeMap[ext] || "application/octet-stream";
 
     const { error: uploadError } = await supabase.storage
       .from("photos")
-      .upload(storagePath, file, { contentType: file.type });
+      .upload(storagePath, file, { contentType });
 
     if (uploadError) {
       results.push({ filename: file.name, error: uploadError.message });
