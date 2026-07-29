@@ -143,9 +143,14 @@ export default function DraftPage() {
   const csvUrl = `/api/sessions/${id}/draft/export`;
 
   async function copyShareLink() {
-    await navigator.clipboard.writeText(window.location.href);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    const url = window.location.href;
+    if (navigator.share) {
+      await navigator.share({ title: session?.title ?? "PhotoDraft", url });
+    } else {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   }
 
   return (
