@@ -43,14 +43,22 @@ export default function HomePage() {
           className="w-full px-4 py-3 rounded-xl bg-[var(--surface)] border border-[var(--border)] focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-colors placeholder:text-[var(--text-muted)]"
           required
         />
-        <input
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          type="password"
-          placeholder="Admin password"
-          className="w-full px-4 py-3 rounded-xl bg-[var(--surface)] border border-[var(--border)] focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-colors placeholder:text-[var(--text-muted)]"
-          required
-        />
+        <div className="relative">
+          <input
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            type="password"
+            placeholder="Set draft admin password"
+            className="w-full px-4 py-3 rounded-xl bg-[var(--surface)] border border-[var(--border)] focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-colors placeholder:text-[var(--text-muted)] pr-10"
+            required
+          />
+          <span
+            title="You'll use this password to manage photos, players, and settings on the draft admin page"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] cursor-help hover:text-[var(--text-secondary)] transition-colors text-sm leading-none"
+          >
+            &#9432;
+          </span>
+        </div>
         <button
           type="submit"
           disabled={isPending}
