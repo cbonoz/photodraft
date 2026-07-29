@@ -28,7 +28,7 @@ export default function HomePage() {
             PhotoDraft
           </span>
         </h1>
-        <p className="text-neutral-500">
+        <p className="text-[var(--text-muted)]">
           Upload photos, add players, and draft them turn by turn.
         </p>
       </div>
@@ -40,7 +40,7 @@ export default function HomePage() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Session title"
-          className="w-full px-4 py-3 rounded-xl bg-[#12121a] border border-[#2a2a3e] focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-colors placeholder:text-neutral-600"
+          className="w-full px-4 py-3 rounded-xl bg-[var(--surface)] border border-[var(--border)] focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-colors placeholder:text-[var(--text-muted)]"
           required
         />
         <input
@@ -48,7 +48,7 @@ export default function HomePage() {
           onChange={(e) => setPassword(e.target.value)}
           type="password"
           placeholder="Admin password"
-          className="w-full px-4 py-3 rounded-xl bg-[#12121a] border border-[#2a2a3e] focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-colors placeholder:text-neutral-600"
+          className="w-full px-4 py-3 rounded-xl bg-[var(--surface)] border border-[var(--border)] focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-colors placeholder:text-[var(--text-muted)]"
           required
         />
         <button

@@ -1,16 +1,44 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
-  --color-surface: #12121a;
-  --color-surface-hover: #1c1c2e;
-  --color-border: #2a2a3e;
   --color-accent: #06b6d4;
   --color-accent2: #3b82f6;
   --color-accent3: #8b5cf6;
 }
 
+:root {
+  --body: #f3f4e9;
+  --surface: #ffffff;
+  --surface-hover: #f0f1e8;
+  --elevated: #f8f9f0;
+  --elevated2: #eceddf;
+  --border: #d8d9ce;
+  --text: #1a1a24;
+  --text-secondary: #5a5b68;
+  --text-muted: #9a9ba8;
+}
+
+.dark {
+  --body: #08080f;
+  --surface: #12121a;
+  --surface-hover: #1c1c2e;
+  --elevated: #0a0a12;
+  --elevated2: #1a1a2e;
+  --border: #2a2a3e;
+  --text: #e4e4ed;
+  --text-secondary: #a0a0b0;
+  --text-muted: #525266;
+}
+
 body {
-  background: #08080f;
+  background: var(--body);
+  color: var(--text);
+  transition: background 0.2s, color 0.2s;
+}
+
+.dark body {
   background-image: radial-gradient(ellipse at 20% 50%, rgba(6, 182, 212, 0.04) 0%, transparent 60%),
     radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.04) 0%, transparent 60%);
 }

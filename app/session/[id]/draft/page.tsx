@@ -14,7 +14,7 @@ import type { Photo } from "@/lib/api";
 function Spinner() {
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="w-6 h-6 border-2 border-neutral-700 border-t-cyan-400 rounded-full animate-spin" />
+      <div className="w-6 h-6 border-2 border-[var(--border)] border-t-cyan-400 rounded-full animate-spin" />
     </div>
   );
 }
@@ -34,9 +34,9 @@ function PickModal({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-fade-in">
-      <div className="bg-[#12121a] border border-[#2a2a3e] rounded-2xl w-[90vw] max-w-[700px] overflow-hidden shadow-2xl">
+      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl w-[90vw] max-w-[700px] overflow-hidden shadow-2xl">
         <div
-          className="flex items-center justify-center bg-[#0a0a12]"
+          className="flex items-center justify-center bg-[var(--elevated)]"
           style={{ height: "50vh", maxHeight: "600px" }}
         >
           <img
@@ -46,17 +46,17 @@ function PickModal({
           />
         </div>
         <div className="p-6 text-center">
-          <p className="text-lg font-semibold text-neutral-200 mb-1">
+          <p className="text-lg font-semibold text-[var(--text)] mb-1">
             Assign to <span className="text-cyan-400">{playerName}</span>?
           </p>
-          <p className="text-neutral-500 text-sm mb-6">
+          <p className="text-[var(--text-muted)] text-sm mb-6">
             This photo will be added to {playerName}&apos;s pile.
           </p>
           <div className="flex gap-3 justify-center">
             <button
               onClick={onCancel}
               disabled={pending}
-              className="px-6 py-2.5 rounded-xl bg-[#1c1c2e] text-neutral-300 font-medium hover:bg-[#252540] disabled:opacity-50 transition-all border border-[#2a2a3e]"
+              className="px-6 py-2.5 rounded-xl bg-[var(--surface-hover)] text-[var(--text-secondary)] font-medium hover:bg-[var(--elevated2)] disabled:opacity-50 transition-all border border-[var(--border)]"
             >
               Cancel
             </button>
@@ -92,15 +92,15 @@ export default function DraftPage() {
   const players = data?.players ?? [];
   const picks = data?.picks ?? [];
 
-  if (!session) return <div className="p-8">Session not found</div>;
+  if (!session) return <div className="p-8 text-[var(--text)]">Session not found</div>;
 
   if (!session.closed && picks.length === 0) {
     return (
       <main className="flex flex-col items-center justify-center min-h-screen p-8">
-        <h1 className="text-3xl font-bold text-neutral-200 mb-4">
+        <h1 className="text-3xl font-bold text-[var(--text)] mb-4">
           Draft Not Started
         </h1>
-        <p className="text-neutral-500 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           The admin needs to start the draft first.
         </p>
         <button
@@ -146,11 +146,11 @@ export default function DraftPage() {
       <div className="flex items-center justify-between mb-8">
         <a
           href={`/session/${id}`}
-          className="text-neutral-600 hover:text-neutral-400 text-sm transition-colors"
+          className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] text-sm transition-colors"
         >
           &larr; Admin
         </a>
-        <h1 className="text-xl font-bold text-neutral-100">
+        <h1 className="text-xl font-bold text-[var(--text)]">
           {session.title}
         </h1>
         {draftComplete ? (
@@ -199,21 +199,21 @@ export default function DraftPage() {
                 {draftComplete ? "Draft Complete!" : "Draft Paused"}
               </h2>
             </div>
-            <p className="text-neutral-500 mb-6">
+            <p className="text-[var(--text-muted)] mb-6">
               {draftComplete
                 ? `All ${allPhotos.length} photos have been picked.`
                 : `${available.length} photo(s) returned to pool. Resume to continue.`}
             </p>
-            <div className="flex justify-center gap-4">
+            <div className="flex justify-center gap-4 flex-wrap">
               <button
                 onClick={() => router.push(`/session/${id}`)}
-                className="px-6 py-3 rounded-xl bg-[#1c1c2e] text-neutral-300 font-medium hover:bg-[#252540] transition-all border border-[#2a2a3e]"
+                className="px-6 py-3 rounded-xl bg-[var(--surface-hover)] text-[var(--text-secondary)] font-medium hover:bg-[var(--elevated2)] transition-all border border-[var(--border)]"
               >
                 Back to Admin
               </button>
               <a
                 href={csvUrl}
-                className="px-6 py-3 rounded-xl bg-[#1c1c2e] text-neutral-300 font-medium hover:bg-[#252540] transition-all border border-[#2a2a3e]"
+                className="px-6 py-3 rounded-xl bg-[var(--surface-hover)] text-[var(--text-secondary)] font-medium hover:bg-[var(--elevated2)] transition-all border border-[var(--border)]"
               >
                 Download CSV
               </a>
@@ -232,7 +232,7 @@ export default function DraftPage() {
                     resetMutation.mutate();
                 }}
                 disabled={resetMutation.isPending}
-                className="px-6 py-3 rounded-xl bg-[#1c1c2e] text-neutral-300 font-medium hover:bg-[#252540] disabled:opacity-50 transition-all border border-[#2a2a3e]"
+                className="px-6 py-3 rounded-xl bg-[var(--surface-hover)] text-[var(--text-secondary)] font-medium hover:bg-[var(--elevated2)] disabled:opacity-50 transition-all border border-[var(--border)]"
               >
                 {resetMutation.isPending ? "..." : "Draft Again"}
               </button>
@@ -245,11 +245,11 @@ export default function DraftPage() {
               return (
                 <div
                   key={player.id}
-                  className="bg-[#12121a] border border-[#2a2a3e] rounded-2xl p-5"
+                  className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5"
                 >
-                  <h3 className="font-semibold text-neutral-200 mb-3 flex items-center gap-2">
+                  <h3 className="font-semibold text-[var(--text)] mb-3 flex items-center gap-2">
                     {player.name}
-                    <span className="text-neutral-500 text-sm font-normal ml-auto">
+                    <span className="text-[var(--text-muted)] text-sm font-normal ml-auto">
                       {playerPicks.length} photo
                       {playerPicks.length !== 1 && "s"}
                     </span>
@@ -258,7 +258,7 @@ export default function DraftPage() {
                     {playerPicks.map((photo) => (
                       <div
                         key={photo.id}
-                        className="relative group aspect-square rounded-xl overflow-hidden bg-[#0a0a12]"
+                        className="relative group aspect-square rounded-xl overflow-hidden bg-[var(--elevated)]"
                       >
                         <img
                           src={photo.url}
@@ -283,7 +283,7 @@ export default function DraftPage() {
       ) : (
         <>
           <div className="text-center mb-8">
-            <p className="text-lg text-neutral-200">
+            <p className="text-lg text-[var(--text)]">
               <span className="text-cyan-400 font-semibold">
                 {currentPlayer?.name}
               </span>
@@ -296,7 +296,7 @@ export default function DraftPage() {
           )}
 
           <div className="mb-10">
-            <h2 className="font-semibold text-neutral-400 text-sm mb-3">
+            <h2 className="font-semibold text-[var(--text-muted)] text-sm mb-3">
               Available ({available.length})
             </h2>
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-2">
@@ -304,7 +304,7 @@ export default function DraftPage() {
                 <button
                   key={p.id}
                   onClick={() => setPendingPhoto(p)}
-                  className="aspect-square rounded-xl overflow-hidden bg-[#0a0a12] border-2 border-transparent hover:border-cyan-500/50 transition-all hover:shadow-lg hover:shadow-cyan-500/10"
+                  className="aspect-square rounded-xl overflow-hidden bg-[var(--elevated)] border-2 border-transparent hover:border-cyan-500/50 transition-all hover:shadow-lg hover:shadow-cyan-500/10"
                 >
                   <img
                     src={p.url}
@@ -326,17 +326,17 @@ export default function DraftPage() {
                   className={`rounded-2xl p-5 transition-all ${
                     isCurrent
                       ? "bg-cyan-950/30 border border-cyan-500/30 ring-1 ring-cyan-500/20 shadow-lg shadow-cyan-500/5"
-                      : "bg-[#12121a] border border-[#2a2a3e]"
+                      : "bg-[var(--surface)] border border-[var(--border)]"
                   }`}
                 >
-                  <h3 className="font-semibold text-neutral-200 mb-3 flex items-center gap-2">
+                  <h3 className="font-semibold text-[var(--text)] mb-3 flex items-center gap-2">
                     {player.name}
                     {isCurrent && (
                       <span className="text-[10px] text-cyan-400 font-medium uppercase tracking-wider">
                         Picking
                       </span>
                     )}
-                    <span className="text-neutral-600 text-sm font-normal ml-auto">
+                    <span className="text-[var(--text-muted)] text-sm font-normal ml-auto">
                       {playerPicks.length}
                     </span>
                   </h3>
@@ -344,7 +344,7 @@ export default function DraftPage() {
                     {playerPicks.map((photo) => (
                       <div
                         key={photo.id}
-                        className="aspect-square rounded-xl overflow-hidden bg-[#0a0a12]"
+                        className="aspect-square rounded-xl overflow-hidden bg-[var(--elevated)]"
                       >
                         <img
                           src={photo.url}
@@ -354,7 +354,7 @@ export default function DraftPage() {
                       </div>
                     ))}
                     {playerPicks.length === 0 && (
-                      <p className="text-neutral-700 text-sm col-span-2">
+                      <p className="text-[var(--text-muted)] text-sm col-span-2">
                         No picks yet
                       </p>
                     )}

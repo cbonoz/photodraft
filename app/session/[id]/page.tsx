@@ -16,7 +16,7 @@ import {
 function Spinner() {
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="w-6 h-6 border-2 border-neutral-700 border-t-cyan-400 rounded-full animate-spin" />
+      <div className="w-6 h-6 border-2 border-[var(--border)] border-t-cyan-400 rounded-full animate-spin" />
     </div>
   );
 }
@@ -84,7 +84,7 @@ export default function AdminPage() {
   if (!authed) {
     return (
       <main className="flex flex-col items-center justify-center min-h-screen p-8">
-        <h1 className="text-3xl font-bold mb-8 text-neutral-200">Admin</h1>
+        <h1 className="text-3xl font-bold mb-8 text-[var(--text)]">Admin</h1>
         <form
           onSubmit={(e) => { e.preventDefault(); login(); }}
           className="flex gap-3 w-full max-w-sm"
@@ -94,7 +94,7 @@ export default function AdminPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Admin password"
-            className="flex-1 px-4 py-3 rounded-xl bg-[#12121a] border border-[#2a2a3e] focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-colors placeholder:text-neutral-600"
+            className="flex-1 px-4 py-3 rounded-xl bg-[var(--surface)] border border-[var(--border)] focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-colors placeholder:text-[var(--text-muted)]"
             required
           />
           <button
@@ -105,12 +105,10 @@ export default function AdminPage() {
             {verifyMutation.isPending ? "..." : "Enter"}
           </button>
         </form>
-        {authError && (
-          <p className="text-red-400 mt-3 text-sm">{authError}</p>
-        )}
+        {authError && <p className="text-red-400 mt-3 text-sm">{authError}</p>}
         <a
           href="/"
-          className="text-neutral-600 text-sm mt-6 hover:text-neutral-400 transition-colors"
+          className="text-[var(--text-muted)] text-sm mt-6 hover:text-[var(--text-secondary)] transition-colors"
         >
           &larr; Back to home
         </a>
@@ -119,7 +117,7 @@ export default function AdminPage() {
   }
 
   if (isLoading) return <Spinner />;
-  if (!session) return <div className="p-8">Session not found</div>;
+  if (!session) return <div className="p-8 text-[var(--text)]">Session not found</div>;
 
   const draftComplete = picks.length > 0 && picks.length === photos.length;
   const draftActive = session.closed && !draftComplete;
@@ -130,14 +128,14 @@ export default function AdminPage() {
         <div>
           <a
             href="/"
-            className="text-neutral-600 hover:text-neutral-400 text-sm transition-colors"
+            className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] text-sm transition-colors"
           >
             &larr; Home
           </a>
-          <h1 className="text-3xl font-bold mt-1 text-neutral-100">
+          <h1 className="text-3xl font-bold mt-1 text-[var(--text)]">
             {session.title}
           </h1>
-          <p className="text-neutral-500 text-sm mt-1">
+          <p className="text-[var(--text-muted)] text-sm mt-1">
             {photos.length} photo{photos.length !== 1 && "s"}
             {players.length > 0 &&
               <> &middot; {players.length} player{players.length !== 1 && "s"}</>}
@@ -151,7 +149,7 @@ export default function AdminPage() {
               ? "bg-emerald-900/50 text-emerald-300 border border-emerald-700/50"
               : draftActive
                 ? "bg-amber-900/50 text-amber-300 border border-amber-700/50"
-                : "bg-[#1a1a2e] text-neutral-500 border border-[#2a2a3e]"
+                : "bg-[var(--elevated2)] text-[var(--text-muted)] border border-[var(--border)]"
           }`}
         >
           {draftComplete ? "Complete" : draftActive ? "In progress" : "Setup"}
@@ -169,8 +167,8 @@ export default function AdminPage() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-[#12121a] border border-[#2a2a3e] rounded-2xl p-6">
-          <h2 className="font-semibold text-neutral-200 mb-4">Photos</h2>
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6">
+          <h2 className="font-semibold text-[var(--text)] mb-4">Photos</h2>
           {!draftActive && (
             <form onSubmit={onUpload} className="flex gap-2 mb-5">
               <input
@@ -178,7 +176,7 @@ export default function AdminPage() {
                 type="file"
                 accept="image/*"
                 multiple
-                className="block w-full text-sm text-neutral-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-[#1c1c2e] file:text-neutral-200 hover:file:bg-[#252540] cursor-pointer transition-colors"
+                className="block w-full text-sm text-[var(--text-secondary)] file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-[var(--surface-hover)] file:text-[var(--text)] hover:file:bg-[var(--elevated2)] cursor-pointer transition-colors"
               />
               <button
                 type="submit"
@@ -193,13 +191,9 @@ export default function AdminPage() {
             {photos.map((p) => (
               <div
                 key={p.id}
-                className="relative group aspect-square rounded-xl overflow-hidden bg-[#0a0a12]"
+                className="relative group aspect-square rounded-xl overflow-hidden bg-[var(--elevated)]"
               >
-                <img
-                  src={p.url}
-                  alt=""
-                  className="w-full h-full object-cover"
-                />
+                <img src={p.url} alt="" className="w-full h-full object-cover" />
                 {!draftActive && (
                   <button
                     onClick={() =>
@@ -218,15 +212,15 @@ export default function AdminPage() {
           </div>
         </div>
 
-        <div className="bg-[#12121a] border border-[#2a2a3e] rounded-2xl p-6">
-          <h2 className="font-semibold text-neutral-200 mb-4">Players</h2>
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6">
+          <h2 className="font-semibold text-[var(--text)] mb-4">Players</h2>
           {!draftActive && (
             <form onSubmit={onAddPlayer} className="flex gap-2 mb-5">
               <input
                 value={newPlayer}
                 onChange={(e) => setNewPlayer(e.target.value)}
                 placeholder="Player name"
-                className="flex-1 px-3 py-2 rounded-xl bg-[#0a0a12] border border-[#2a2a3e] focus:outline-none focus:border-cyan-500/50 text-sm transition-colors placeholder:text-neutral-600"
+                className="flex-1 px-3 py-2 rounded-xl bg-[var(--elevated)] border border-[var(--border)] focus:outline-none focus:border-cyan-500/50 text-sm transition-colors placeholder:text-[var(--text-muted)]"
               />
               <button
                 type="submit"
@@ -238,16 +232,16 @@ export default function AdminPage() {
             </form>
           )}
           {players.length === 0 ? (
-            <p className="text-neutral-600 text-sm">No players yet</p>
+            <p className="text-[var(--text-muted)] text-sm">No players yet</p>
           ) : (
             <ul className="space-y-1">
               {players.map((p, i) => (
                 <li
                   key={p.id}
-                  className="flex items-center justify-between px-3 py-2 rounded-xl bg-[#0a0a12] text-neutral-300"
+                  className="flex items-center justify-between px-3 py-2 rounded-xl bg-[var(--elevated)] text-[var(--text-secondary)]"
                 >
                   <span>
-                    <span className="text-neutral-600 mr-2 text-sm">#{i + 1}</span>
+                    <span className="text-[var(--text-muted)] mr-2 text-sm">#{i + 1}</span>
                     {p.name}
                   </span>
                   {!draftActive && (
@@ -300,7 +294,7 @@ export default function AdminPage() {
               )
             }
             disabled={resetMutation.isPending}
-            className="px-8 py-3 rounded-xl bg-[#1c1c2e] text-neutral-300 font-semibold hover:bg-[#252540] disabled:opacity-50 transition-all border border-[#2a2a3e]"
+            className="px-8 py-3 rounded-xl bg-[var(--surface-hover)] text-[var(--text-secondary)] font-semibold hover:bg-[var(--elevated2)] disabled:opacity-50 transition-all border border-[var(--border)]"
           >
             {resetMutation.isPending ? "..." : "Reset Draft"}
           </button>
