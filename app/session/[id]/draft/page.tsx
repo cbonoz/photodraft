@@ -37,7 +37,7 @@ function PickModal({
       <div className="bg-[#12121a] border border-[#2a2a3e] rounded-2xl w-[90vw] max-w-[700px] overflow-hidden shadow-2xl">
         <div
           className="flex items-center justify-center bg-[#0a0a12]"
-          style={{ height: "70vh", maxHeight: "600px" }}
+          style={{ height: "50vh", maxHeight: "600px" }}
         >
           <img
             src={photo.url}
@@ -268,7 +268,7 @@ export default function DraftPage() {
                         <button
                           onClick={() => returnMutation.mutate(photo.id)}
                           disabled={returnMutation.isPending}
-                          className="absolute inset-0 bg-black/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs text-neutral-300 hover:text-white font-medium backdrop-blur-sm"
+                          className="absolute inset-0 bg-black/70 flex items-center justify-center sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-xs text-neutral-300 hover:text-white font-medium backdrop-blur-sm"
                         >
                           Return to pool
                         </button>
@@ -299,7 +299,7 @@ export default function DraftPage() {
             <h2 className="font-semibold text-neutral-400 text-sm mb-3">
               Available ({available.length})
             </h2>
-            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-2">
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-2">
               {available.map((p) => (
                 <button
                   key={p.id}

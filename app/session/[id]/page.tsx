@@ -189,7 +189,7 @@ export default function AdminPage() {
               </button>
             </form>
           )}
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {photos.map((p) => (
               <div
                 key={p.id}
@@ -208,7 +208,7 @@ export default function AdminPage() {
                         "Delete this photo?"
                       )
                     }
-                    className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/60 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 flex items-center justify-center"
+                    className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-black/60 text-white text-xs sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-red-600 flex items-center justify-center"
                   >
                     &times;
                   </button>
