@@ -368,18 +368,20 @@ export default function AdminPage() {
             {draftComplete ? "View Results" : "Go to Draft Board"}
           </button>
         )}
-        {draftComplete && (
+        {(draftComplete || draftActive) && (
           <button
             onClick={() =>
               confirmAction(
                 () => resetMutation.mutate(),
-                "Reset all picks and start over?"
+                draftActive
+                  ? "Abort the in-progress draft and return to setup?"
+                  : "Reset all picks and start over?"
               )
             }
             disabled={resetMutation.isPending}
             className="px-8 py-3 rounded-xl bg-[var(--surface-hover)] text-[var(--text-secondary)] font-semibold hover:bg-[var(--elevated2)] disabled:opacity-50 transition-all border border-[var(--border)]"
           >
-            {resetMutation.isPending ? "..." : "Reset Draft"}
+            {resetMutation.isPending ? "..." : draftActive ? "Abort Draft" : "Reset Draft"}
           </button>
         )}
       </div>
