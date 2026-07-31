@@ -11,6 +11,7 @@ import {
   useResumeDraft,
 } from "@/lib/hooks";
 import type { Photo } from "@/lib/api";
+import { PhotoTile } from "@/components/PhotoTile";
 
 function Spinner() {
   return (
@@ -288,17 +289,19 @@ export default function DraftPage() {
                         key={photo.id}
                         className="relative group aspect-square rounded-xl overflow-hidden bg-[var(--elevated)]"
                       >
-                        <img
-                          src={photo.url}
-                          alt=""
-                          className="w-full h-full object-cover"
-                        />
+                        <PhotoTile photo={photo} className="h-full">
+                          <img
+                            src={photo.url}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
+                        </PhotoTile>
                         <button
                           onClick={() => returnMutation.mutate(photo.id)}
                           disabled={returnMutation.isPending}
-                          className="absolute inset-0 bg-black/70 flex items-center justify-center sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-xs text-neutral-300 hover:text-white font-medium backdrop-blur-sm"
+                          className="absolute top-1.5 right-1.5 px-2 py-1 rounded-full bg-black/70 text-[10px] text-neutral-300 hover:text-white font-medium backdrop-blur-sm sm:opacity-0 sm:group-hover:opacity-100 transition-opacity z-10"
                         >
-                          Return to pool
+                          Return
                         </button>
                       </div>
                     ))}
@@ -384,11 +387,13 @@ export default function DraftPage() {
                         key={photo.id}
                         className="aspect-square rounded-xl overflow-hidden bg-[var(--elevated)]"
                       >
-                        <img
-                          src={photo.url}
-                          alt=""
-                          className="w-full h-full object-cover"
-                        />
+                        <PhotoTile photo={photo} className="h-full">
+                          <img
+                            src={photo.url}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
+                        </PhotoTile>
                       </div>
                     ))}
                     {playerPicks.length === 0 && (

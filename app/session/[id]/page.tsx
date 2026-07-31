@@ -14,6 +14,7 @@ import {
 } from "@/lib/hooks";
 import type { Photo, PhotoUploadResult } from "@/lib/api";
 import * as api from "@/lib/api";
+import { PhotoTile } from "@/components/PhotoTile";
 
 function Spinner() {
   return (
@@ -276,7 +277,9 @@ export default function AdminPage() {
                 key={p.id}
                 className="relative group aspect-square rounded-xl overflow-hidden bg-[var(--elevated)]"
               >
-                <img src={p.url} alt="" className="w-full h-full object-cover" />
+                <PhotoTile photo={p} className="h-full">
+                  <img src={p.url} alt="" className="w-full h-full object-cover" />
+                </PhotoTile>
                 {!draftActive && (
                   <button
                     onClick={() =>
@@ -285,7 +288,7 @@ export default function AdminPage() {
                         "Delete this photo?"
                       )
                     }
-                    className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-black/60 text-white text-xs sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-red-600 flex items-center justify-center"
+                    className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-black/60 text-white text-xs sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-red-600 flex items-center justify-center z-10"
                   >
                     &times;
                   </button>
