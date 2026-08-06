@@ -194,6 +194,17 @@ export default function AdminPage() {
             {verifyMutation.isPending ? "Checking..." : "Enter Admin"}
           </button>
         </form>
+        <div className="flex items-center gap-3 my-4 w-full max-w-sm">
+          <div className="flex-1 h-px bg-[var(--border)]" />
+          <span className="text-[var(--text-muted)] text-xs">or</span>
+          <div className="flex-1 h-px bg-[var(--border)]" />
+        </div>
+        <a
+          href={`/session/${id}/draft`}
+          className="w-full max-w-sm px-6 py-3 rounded-xl bg-[var(--surface-hover)] text-[var(--text)] font-semibold hover:bg-[var(--elevated2)] transition-all border border-[var(--border)] text-center"
+        >
+          Join as Participant
+        </a>
       </main>
     );
   }
