@@ -222,7 +222,7 @@ export default function DraftPage() {
             </span>
           ) : (
             <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-amber-900/50 text-amber-300 border border-amber-700/50">
-              Pick {picks.length + 1} of {allPhotos.length}
+              {available.length} remaining
             </span>
           )}
         </div>
@@ -407,75 +407,84 @@ export default function DraftPage() {
             <p className="text-center text-red-400 text-sm mb-4">{message}</p>
           )}
 
-          <div className="mb-10">
-            <h2 className="font-semibold text-[var(--text-muted)] text-sm mb-3">
-              Available ({available.length})
-            </h2>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-2">
-              {available.map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => setPendingPhoto(p)}
-                  className="aspect-square rounded-xl overflow-hidden bg-[var(--elevated)] border-2 border-transparent hover:border-cyan-500/50 transition-all hover:shadow-lg hover:shadow-cyan-500/10"
-                >
-                  <img
-                    src={p.url}
-                    alt=""
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {players.map((player) => {
-              const playerPicks = picksByPlayer.get(player.id) ?? [];
-              const isCurrent = player.id === currentPlayer?.id;
-              return (
-                <div
-                  key={player.id}
-                  className={`rounded-2xl p-5 transition-all ${
-                    isCurrent
-                      ? "bg-cyan-950/30 border border-cyan-500/30 ring-1 ring-cyan-500/20 shadow-lg shadow-cyan-500/5"
-                      : "bg-[var(--surface)] border border-[var(--border)]"
-                  }`}
-                >
-                  <h3 className="font-semibold text-[var(--text)] mb-3 flex items-center gap-2">
-                    {player.name}
-                    {isCurrent && (
-                      <span className="text-[10px] text-cyan-400 font-medium uppercase tracking-wider">
-                        Picking
-                      </span>
-                    )}
-                    <span className="text-[var(--text-muted)] text-sm font-normal ml-auto">
-                      {playerPicks.length}
-                    </span>
-                  </h3>
-                  <div className="grid grid-cols-2 gap-2 min-h-[100px]">
-                    {playerPicks.map((photo) => (
-                      <div
-                        key={photo.id}
-                        className="aspect-square rounded-xl overflow-hidden bg-[var(--elevated)]"
-                      >
-                        <PhotoTile photo={photo} className="h-full">
-                          <img
-                            src={photo.url}
-                            alt=""
-                            className="w-full h-full object-cover"
-                          />
-                        </PhotoTile>
-                      </div>
-                    ))}
-                    {playerPicks.length === 0 && (
-                      <p className="text-[var(--text-muted)] text-sm col-span-2">
-                        No picks yet
-                      </p>
-                    )}
-                  </div>
+          <div className="lg:flex lg:gap-6 lg:items-start">
+            <div className="lg:flex-1 lg:min-w-0">
+              <div className="mb-10 lg:mb-0">
+                <h2 className="font-semibold text-[var(--text-muted)] text-sm mb-3 flex items-center gap-2">
+                  Photo Pool
+                  <span className="px-2 py-0.5 rounded-full bg-amber-900/40 text-amber-300 text-xs border border-amber-700/40">
+                    {available.length} remaining
+                  </span>
+                </h2>
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+                  {available.map((p) => (
+                    <button
+                      key={p.id}
+                      onClick={() => setPendingPhoto(p)}
+                      className="aspect-square rounded-xl overflow-hidden bg-[var(--elevated)] border-2 border-transparent hover:border-cyan-500/50 transition-all hover:shadow-lg hover:shadow-cyan-500/10"
+                    >
+                      <img
+                        src={p.url}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  ))}
                 </div>
-              );
-            })}
+              </div>
+            </div>
+
+            <div className="lg:w-72 lg:flex-shrink-0">
+              <div className="space-y-3">
+                {players.map((player) => {
+                  const playerPicks = picksByPlayer.get(player.id) ?? [];
+                  const isCurrent = player.id === currentPlayer?.id;
+                  return (
+                    <div
+                      key={player.id}
+                      className={`rounded-2xl p-4 transition-all ${
+                        isCurrent
+                          ? "bg-cyan-950/30 border border-cyan-500/30 ring-1 ring-cyan-500/20 shadow-lg shadow-cyan-500/5"
+                          : "bg-[var(--surface)] border border-[var(--border)]"
+                      }`}
+                    >
+                      <h3 className="font-semibold text-[var(--text)] mb-2.5 flex items-center gap-2">
+                        {player.name}
+                        {isCurrent && (
+                          <span className="text-[10px] text-cyan-400 font-medium uppercase tracking-wider">
+                            Picking
+                          </span>
+                        )}
+                        <span className="text-[var(--text-muted)] text-sm font-normal ml-auto">
+                          {playerPicks.length}
+                        </span>
+                      </h3>
+                      <div className="grid grid-cols-3 gap-2">
+                        {playerPicks.map((photo) => (
+                          <div
+                            key={photo.id}
+                            className="aspect-square rounded-lg overflow-hidden bg-[var(--elevated)]"
+                          >
+                            <PhotoTile photo={photo} className="h-full">
+                              <img
+                                src={photo.url}
+                                alt=""
+                                className="w-full h-full object-cover"
+                              />
+                            </PhotoTile>
+                          </div>
+                        ))}
+                        {playerPicks.length === 0 && (
+                          <p className="text-[var(--text-muted)] text-xs col-span-3">
+                            No picks yet
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </>
       )}
