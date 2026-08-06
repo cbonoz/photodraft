@@ -396,7 +396,8 @@ export default function AdminPage() {
           {draftActive && (
             <div className="mt-4 p-3 rounded-xl bg-amber-900/20 border border-amber-700/40">
               <p className="text-xs text-amber-300/90 leading-relaxed">
-                To change the player order or add photos,{" "}
+                The draft is currently in progress. To change the player
+                order or add photos,{" "}
                 <button
                   onClick={() =>
                     confirmAction(
