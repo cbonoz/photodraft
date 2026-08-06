@@ -463,7 +463,7 @@ export default function DraftPage() {
                         {playerPicks.map((photo) => (
                           <div
                             key={photo.id}
-                            className="aspect-square rounded-lg overflow-hidden bg-[var(--elevated)]"
+                            className="relative group aspect-square rounded-lg overflow-hidden bg-[var(--elevated)]"
                           >
                             <PhotoTile photo={photo} className="h-full">
                               <img
@@ -472,6 +472,23 @@ export default function DraftPage() {
                                 className="w-full h-full object-cover"
                               />
                             </PhotoTile>
+                            {isAdmin && (
+                              <button
+                                onClick={() => {
+                                  if (
+                                    window.confirm(
+                                      `Return this photo to the pool? It will be available to pick again.`
+                                    )
+                                  )
+                                    returnMutation.mutate(photo.id);
+                                }}
+                                disabled={returnMutation.isPending}
+                                className="absolute top-1 right-1 px-1.5 py-0.5 rounded-full bg-black/70 text-[9px] text-neutral-300 hover:text-white font-medium backdrop-blur-sm sm:opacity-0 sm:group-hover:opacity-100 transition-opacity z-10"
+                                title="Return to pool"
+                              >
+                                &times;
+                              </button>
+                            )}
                           </div>
                         ))}
                         {playerPicks.length === 0 && (
