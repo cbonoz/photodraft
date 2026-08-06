@@ -9,6 +9,7 @@ import {
   useReturnPhoto,
   useResetDraft,
   useResumeDraft,
+  useVerifyAdmin,
 } from "@/lib/hooks";
 import type { Photo } from "@/lib/api";
 import { PhotoTile } from "@/components/PhotoTile";
@@ -89,9 +90,30 @@ export default function DraftPage() {
   const returnMutation = useReturnPhoto(id);
   const resetMutation = useResetDraft(id);
   const resumeMutation = useResumeDraft(id);
+  const verifyMutation = useVerifyAdmin(id);
   const [message, setMessage] = useState("");
   const [pendingPhoto, setPendingPhoto] = useState<Photo | null>(null);
   const [copied, setCopied] = useState(false);
+  const [adminModalOpen, setAdminModalOpen] = useState(false);
+  const [adminPassword, setAdminPassword] = useState("");
+  const [adminError, setAdminError] = useState("");
+  const [isAdmin, setIsAdmin] = useState(
+    () => !!sessionStorage.getItem(`admin_${id}`)
+  );
+
+  async function elevateToAdmin(e: React.FormEvent) {
+    e.preventDefault();
+    setAdminError("");
+    try {
+      await verifyMutation.mutateAsync(adminPassword);
+      sessionStorage.setItem(`admin_${id}`, "1");
+      setIsAdmin(true);
+      setAdminModalOpen(false);
+      router.push(`/session/${id}`);
+    } catch {
+      setAdminError("Wrong password");
+    }
+  }
 
   if (isLoading) return <Spinner />;
 
@@ -171,12 +193,12 @@ export default function DraftPage() {
   return (
     <main className="max-w-7xl mx-auto p-6">
       <div className="flex items-center justify-between mb-8">
-        <a
-          href={`/session/${id}`}
+        <button
+          onClick={() => (isAdmin ? router.push(`/session/${id}`) : setAdminModalOpen(true))}
           className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] text-sm transition-colors"
         >
-          &larr; Admin
-        </a>
+          &larr; {isAdmin ? "Admin" : "Admin Access"}
+        </button>
         <h1 className="text-xl font-bold text-[var(--text)]">
           {session.title}
         </h1>
@@ -214,6 +236,46 @@ export default function DraftPage() {
           onCancel={() => setPendingPhoto(null)}
           pending={pickMutation.isPending}
         />
+      )}
+
+      {adminModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-fade-in">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl w-full max-w-sm p-6 shadow-2xl">
+            <h2 className="text-lg font-semibold text-[var(--text)] mb-1">
+              Admin Access
+            </h2>
+            <p className="text-[var(--text-muted)] text-sm mb-5">
+              Enter the admin password to manage this draft.
+            </p>
+            <form onSubmit={elevateToAdmin} className="flex flex-col gap-3">
+              <input
+                type="password"
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+                placeholder="Admin password"
+                className="w-full px-4 py-3 rounded-xl bg-[var(--elevated)] border border-[var(--border)] focus:outline-none focus:border-cyan-500/50 text-sm transition-colors placeholder:text-[var(--text-muted)]"
+                required
+                autoFocus
+              />
+              {adminError && (
+                <p className="text-red-400 text-sm text-center">{adminError}</p>
+              )}
+              <button
+                type="submit"
+                disabled={verifyMutation.isPending}
+                className="w-full px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold hover:from-cyan-400 hover:to-blue-500 disabled:opacity-50 transition-all"
+              >
+                {verifyMutation.isPending ? "Checking..." : "Continue as Admin"}
+              </button>
+            </form>
+            <button
+              onClick={() => setAdminModalOpen(false)}
+              className="w-full mt-3 px-6 py-2.5 rounded-xl bg-[var(--surface-hover)] text-[var(--text-secondary)] font-medium hover:bg-[var(--elevated2)] transition-all border border-[var(--border)]"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
       )}
 
       {draftComplete || draftPaused ? (
