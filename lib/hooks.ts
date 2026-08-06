@@ -124,6 +124,15 @@ export function useResetDraft(sessionId: string) {
   });
 }
 
+export function useUpdateSnakeDraft(sessionId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (snakeDraft: boolean) =>
+      api.updateSnakeDraft(sessionId, snakeDraft),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["session", sessionId] }),
+  });
+}
+
 export function useVerifyAdmin(sessionId: string) {
   return useMutation({
     mutationFn: (password: string) => api.verifyAdmin(sessionId, password),

@@ -183,6 +183,20 @@ export async function resumeDraft(sessionId: string): Promise<void> {
   if (!res.ok) throw new Error("Failed to resume");
 }
 
+export async function updateSnakeDraft(
+  sessionId: string,
+  snakeDraft: boolean
+): Promise<Session> {
+  const res = await fetch(`/api/sessions/${sessionId}/settings`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ snakeDraft }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error);
+  return data.session;
+}
+
 export async function resetDraft(sessionId: string): Promise<void> {
   const res = await fetch(`/api/sessions/${sessionId}/reset`, {
     method: "POST",

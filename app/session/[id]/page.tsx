@@ -10,6 +10,7 @@ import {
   useRemovePlayer,
   useStartDraft,
   useResetDraft,
+  useUpdateSnakeDraft,
   useVerifyAdmin,
 } from "@/lib/hooks";
 import type { Photo, PhotoUploadResult } from "@/lib/api";
@@ -46,6 +47,7 @@ export default function AdminPage() {
   const removePlayer = useRemovePlayer(id);
   const startMutation = useStartDraft(id);
   const resetMutation = useResetDraft(id);
+  const snakeDraftMutation = useUpdateSnakeDraft(id);
   const verifyMutation = useVerifyAdmin(id);
 
   const session = data?.session;
@@ -257,6 +259,39 @@ export default function AdminPage() {
         >
           {msg.text}
         </p>
+      )}
+
+      {!draftActive && (
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-4 mb-6 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-[var(--text)]">Snake draft</p>
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">
+              Order reverses each round (1,2,3 &rarr; 3,2,1).{" "}
+              {session.snake_draft
+                ? "Currently enabled."
+                : "Currently off — order repeats each round."}
+            </p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={session.snake_draft}
+            onClick={() =>
+              snakeDraftMutation.mutate(!session.snake_draft)
+            }
+            className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${
+              session.snake_draft
+                ? "bg-gradient-to-r from-cyan-500 to-blue-600"
+                : "bg-[var(--elevated2)]"
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${
+                session.snake_draft ? "left-[22px]" : "left-0.5"
+              }`}
+            />
+          </button>
+        </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
