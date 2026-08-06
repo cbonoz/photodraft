@@ -4,6 +4,7 @@ export interface Session {
   closed: boolean;
   current_turn: number;
   admin_password: string;
+  snake_draft: boolean;
 }
 
 export interface Photo {
@@ -42,11 +43,15 @@ export async function fetchSession(id: string): Promise<SessionData> {
   return res.json();
 }
 
-export async function createSession(title: string, password: string): Promise<Session> {
+export async function createSession(
+  title: string,
+  password: string,
+  snakeDraft = false
+): Promise<Session> {
   const res = await fetch("/api/sessions", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title, password }),
+    body: JSON.stringify({ title, password, snakeDraft }),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error);

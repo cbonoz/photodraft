@@ -15,8 +15,15 @@ export function useSession(id: string) {
 export function useCreateSession() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ title, password }: { title: string; password: string }) =>
-      api.createSession(title, password),
+    mutationFn: ({
+      title,
+      password,
+      snakeDraft = false,
+    }: {
+      title: string;
+      password: string;
+      snakeDraft?: boolean;
+    }) => api.createSession(title, password, snakeDraft),
     onSuccess: () => qc.invalidateQueries(),
   });
 }

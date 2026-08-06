@@ -7,6 +7,7 @@ import { useCreateSession } from "@/lib/hooks";
 export default function HomePage() {
   const [title, setTitle] = useState("");
   const [password, setPassword] = useState("");
+  const [snakeDraft, setSnakeDraft] = useState(false);
   const { mutateAsync, isPending } = useCreateSession();
   const router = useRouter();
 
@@ -16,6 +17,7 @@ export default function HomePage() {
     const session = await mutateAsync({
       title: title.trim(),
       password: password.trim(),
+      snakeDraft,
     });
     router.push(`/session/${session.id}`);
   }
@@ -56,6 +58,29 @@ export default function HomePage() {
             You'll use this to manage photos, players, and settings.
           </p>
         </div>
+        <label className="flex items-center justify-between px-4 py-3 rounded-xl bg-[var(--surface)] border border-[var(--border)] cursor-pointer select-none">
+          <span className="text-sm text-[var(--text-secondary)]">
+            Snake draft
+            <span className="block text-[11px] text-[var(--text-muted)]">
+              Order reverses each round (1,2,3 → 3,2,1)
+            </span>
+          </span>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={snakeDraft}
+            onClick={() => setSnakeDraft((v) => !v)}
+            className={`relative w-11 h-6 rounded-full transition-colors ${
+              snakeDraft ? "bg-gradient-to-r from-cyan-500 to-blue-600" : "bg-[var(--elevated2)]"
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${
+                snakeDraft ? "left-[22px]" : "left-0.5"
+              }`}
+            />
+          </button>
+        </label>
         <button
           type="submit"
           disabled={isPending}

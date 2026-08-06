@@ -12,6 +12,7 @@ import {
 } from "@/lib/hooks";
 import type { Photo } from "@/lib/api";
 import { PhotoTile } from "@/components/PhotoTile";
+import { playerForPick } from "@/lib/draft-order";
 
 function Spinner() {
   return (
@@ -123,8 +124,16 @@ export default function DraftPage() {
   const pickedPhotoIds = new Set(picks.map((p) => p.photo_id));
   const available = allPhotos.filter((p) => !pickedPhotoIds.has(p.id));
 
-  const playerIndex = session.current_turn % players.length;
-  const currentPlayer = players[playerIndex];
+  const currentPlayer =
+    players.length > 0
+      ? players[
+          playerForPick(
+            session.current_turn,
+            players.length,
+            session.snake_draft ?? false
+          )
+        ]
+      : undefined;
 
   const picksByPlayer = new Map<string, Photo[]>();
   for (const p of players) picksByPlayer.set(p.id, []);

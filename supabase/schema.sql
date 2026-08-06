@@ -5,7 +5,8 @@ create table sessions (
   title text not null,
   admin_password text not null default '',
   closed boolean not null default false,
-  current_turn integer not null default 0
+  current_turn integer not null default 0,
+  snake_draft boolean not null default false
 );
 
 create table photos (

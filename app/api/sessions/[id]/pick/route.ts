@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase/server";
+import { playerForPick } from "@/lib/draft-order";
 
 export async function POST(
   req: Request,
@@ -31,7 +32,11 @@ export async function POST(
   if (!players?.length)
     return NextResponse.json({ error: "No players" }, { status: 400 });
 
-  const playerIndex = session.current_turn % players.length;
+  const playerIndex = playerForPick(
+    session.current_turn,
+    players.length,
+    session.snake_draft ?? false
+  );
   const currentPlayer = players[playerIndex];
 
   const { data: existing } = await supabase
@@ -95,7 +100,9 @@ export async function POST(
 
   const nextPlayer = done
     ? null
-    : players[nextTurn % players.length];
+    : players[
+        playerForPick(nextTurn, players.length, session.snake_draft ?? false)
+      ];
 
   return NextResponse.json({
     pick,
