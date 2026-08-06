@@ -296,25 +296,52 @@ export default function AdminPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6">
-          <h2 className="font-semibold text-[var(--text)] mb-4">Photos</h2>
+          <h2 className="font-semibold text-[var(--text)] mb-4">
+            Photos{" "}
+            <span className="text-[var(--text-muted)] text-xs font-normal">
+              ({photos.length} / 200)
+            </span>
+          </h2>
           {!draftActive && (
-            <form onSubmit={onUpload} className="flex gap-2 mb-5">
-              <input
-                ref={fileRef}
-                type="file"
-                accept="image/*"
-                multiple
-                className="block w-full text-sm text-[var(--text-secondary)] file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-[var(--surface-hover)] file:text-[var(--text)] hover:file:bg-[var(--elevated2)] cursor-pointer transition-colors"
-              />
-              <button
-                type="submit"
-                disabled={uploadProgress !== null}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-medium hover:from-cyan-400 hover:to-blue-500 disabled:opacity-50 transition-all whitespace-nowrap"
-              >
-                {uploadProgress !== null
-                  ? `${uploadProgress.done} / ${uploadProgress.total}`
-                  : "Upload"}
-              </button>
+            <form onSubmit={onUpload} className="mb-5">
+              <label className="flex flex-col items-center justify-center gap-2 p-8 rounded-2xl border-2 border-dashed border-[var(--border)] bg-[var(--elevated)] cursor-pointer hover:border-cyan-500/50 transition-colors text-center">
+                <svg
+                  className="w-8 h-8 text-[var(--text-muted)]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+                  />
+                </svg>
+                <p className="text-sm font-medium text-[var(--text)]">
+                  Add photos to the draft pool
+                </p>
+                <p className="text-xs text-[var(--text-muted)]">
+                  Click to select or drag &amp; drop images here
+                </p>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => {
+                    if (e.target.files?.length) {
+                      e.currentTarget.form?.requestSubmit();
+                    }
+                  }}
+                />
+              </label>
+              {uploadProgress !== null && (
+                <p className="text-xs text-[var(--text-secondary)] text-center mt-3">
+                  Uploading {uploadProgress.done} / {uploadProgress.total}...
+                </p>
+              )}
             </form>
           )}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
