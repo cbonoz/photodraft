@@ -158,6 +158,31 @@ export default function AdminPage() {
   }
 
   if (!authed) {
+    if (!isLoading && !session) {
+      return (
+        <main className="flex flex-col items-center justify-center min-h-screen p-8">
+          <a
+            href="/"
+            className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] text-sm transition-colors mb-8"
+          >
+            &larr; Home
+          </a>
+          <h1 className="text-3xl font-bold text-[var(--text)] mb-2">
+            Draft not found
+          </h1>
+          <p className="text-[var(--text-muted)] text-sm mb-6">
+            This draft doesn&apos;t exist or the link is incorrect.
+          </p>
+          <a
+            href="/"
+            className="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all"
+          >
+            Create a Draft
+          </a>
+        </main>
+      );
+    }
+
     return (
       <main className="flex flex-col items-center justify-center min-h-screen p-8">
         <a
