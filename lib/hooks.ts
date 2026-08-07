@@ -9,6 +9,15 @@ export function useSession(id: string) {
     queryKey: ["session", id],
     queryFn: () => api.fetchSession(id),
     enabled: !!id,
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
+    refetchInterval: (query) => {
+      const data = query.state.data as api.SessionData | undefined;
+      const draftActive =
+        data?.session.closed &&
+        (data?.picks?.length ?? 0) < (data?.photos?.length ?? 0);
+      return draftActive ? 3000 : 15000;
+    },
   });
 }
 
