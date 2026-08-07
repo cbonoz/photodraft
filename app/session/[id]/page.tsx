@@ -167,9 +167,13 @@ export default function AdminPage() {
           &larr; Home
         </a>
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-[var(--text)] mb-2">
-            {isLoading ? "Draft" : session?.title ?? "Draft"}
-          </h1>
+          {isLoading ? (
+            <div className="h-9 w-40 mx-auto rounded-lg bg-[var(--elevated)] animate-pulse mb-2" />
+          ) : (
+            <h1 className="text-3xl font-bold text-[var(--text)] mb-2">
+              {session?.title ?? "Untitled Draft"}
+            </h1>
+          )}
           <p className="text-[var(--text-muted)] text-sm">
             Enter the admin password to manage photos, players, and settings.
           </p>
