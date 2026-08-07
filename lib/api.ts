@@ -37,9 +37,17 @@ export interface SessionData {
   picks: Pick[];
 }
 
+export class NotFoundError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "NotFoundError";
+  }
+}
+
 export async function fetchSession(id: string): Promise<SessionData> {
   const res = await fetch(`/api/sessions/${id}`);
-  if (!res.ok) throw new Error("Session not found");
+  if (res.status === 404) throw new NotFoundError("Draft not found");
+  if (!res.ok) throw new Error("Failed to load draft");
   return res.json();
 }
 

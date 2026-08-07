@@ -40,7 +40,7 @@ export default function AdminPage() {
 
   const [uploadProgress, setUploadProgress] = useState<{ done: number; total: number } | null>(null);
 
-  const { data, isLoading } = useSession(id);
+  const { data, isLoading, isError } = useSession(id);
   const queryClient = useQueryClient();
   const deleteMutation = useDeletePhoto(id);
   const addPlayer = useAddPlayer(id);
@@ -158,7 +158,7 @@ export default function AdminPage() {
   }
 
   if (!authed) {
-    if (!isLoading && !session) {
+    if (isError) {
       return (
         <main className="flex flex-col items-center justify-center min-h-screen p-8">
           <a
@@ -183,6 +183,14 @@ export default function AdminPage() {
       );
     }
 
+    if (isLoading) {
+      return (
+        <main className="flex flex-col items-center justify-center min-h-screen p-8">
+          <div className="w-6 h-6 border-2 border-[var(--border)] border-t-cyan-400 rounded-full animate-spin" />
+        </main>
+      );
+    }
+
     return (
       <main className="flex flex-col items-center justify-center min-h-screen p-8">
         <a
@@ -192,13 +200,9 @@ export default function AdminPage() {
           &larr; Home
         </a>
         <div className="text-center mb-8">
-          {isLoading ? (
-            <div className="h-9 w-40 mx-auto rounded-lg bg-[var(--elevated)] animate-pulse mb-2" />
-          ) : (
-            <h1 className="text-3xl font-bold text-[var(--text)] mb-2">
-              {session?.title ?? "Untitled Draft"}
-            </h1>
-          )}
+          <h1 className="text-3xl font-bold text-[var(--text)] mb-2">
+            {session?.title ?? "Untitled Draft"}
+          </h1>
           <p className="text-[var(--text-muted)] text-sm">
             Enter the admin password to manage photos, players, and settings.
           </p>

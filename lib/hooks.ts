@@ -9,6 +9,10 @@ export function useSession(id: string) {
     queryKey: ["session", id],
     queryFn: () => api.fetchSession(id),
     enabled: !!id,
+    retry: (failureCount, error) => {
+      if (error instanceof api.NotFoundError) return false;
+      return failureCount < 2;
+    },
     refetchIntervalInBackground: true,
     refetchOnWindowFocus: true,
     refetchInterval: (query) => {
