@@ -13,14 +13,15 @@ export function useSession(id: string) {
       if (error instanceof api.NotFoundError) return false;
       return failureCount < 2;
     },
-    refetchIntervalInBackground: true,
+    refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
     refetchInterval: (query) => {
       const data = query.state.data as api.SessionData | undefined;
+      if (!data?.session) return false;
       const draftActive =
-        data?.session.closed &&
-        (data?.picks?.length ?? 0) < (data?.photos?.length ?? 0);
-      return draftActive ? 3000 : 15000;
+        data.session.closed &&
+        data.picks.length < data.photos.length;
+      return draftActive ? 20000 : 60000;
     },
   });
 }
