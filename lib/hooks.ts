@@ -21,7 +21,7 @@ export function useSession(id: string) {
       const draftActive =
         data.session.closed &&
         data.picks.length < data.photos.length;
-      return draftActive ? 20000 : 60000;
+      return draftActive ? 20000 : false;
     },
   });
 }
