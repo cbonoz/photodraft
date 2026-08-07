@@ -473,6 +473,50 @@ export default function AdminPage() {
               </p>
             </div>
           )}
+
+          {session.closed && (
+            <div className="mt-4 space-y-2">
+              <button
+                onClick={() => router.push(`/session/${id}/draft`)}
+                className="w-full px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all"
+              >
+                {draftComplete ? "View Results" : "Go to Draft Board"}
+              </button>
+              {draftActive && (
+                <button
+                  onClick={() =>
+                    confirmAction(
+                      () => resetMutation.mutate(),
+                      "Abort the in-progress draft and return to setup?"
+                    )
+                  }
+                  disabled={resetMutation.isPending}
+                  className="w-full px-4 py-2.5 rounded-xl bg-[var(--surface-hover)] text-[var(--text-secondary)] text-sm font-medium hover:bg-[var(--elevated2)] disabled:opacity-50 transition-all border border-[var(--border)]"
+                >
+                  {resetMutation.isPending ? "..." : "Abort Draft"}
+                </button>
+              )}
+            </div>
+          )}
+
+          <button
+            onClick={async () => {
+              const url = window.location.href;
+              if (navigator.share) {
+                await navigator.share({ title: session?.title ?? "PhotoDraft", url });
+              } else {
+                await navigator.clipboard.writeText(url);
+                setShareCopied(true);
+                setTimeout(() => setShareCopied(false), 2000);
+              }
+            }}
+            className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[var(--surface-hover)] text-[var(--text-muted)] text-sm hover:text-[var(--text-secondary)] hover:bg-[var(--elevated2)] transition-all border border-[var(--border)]"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
+            </svg>
+            {shareCopied ? "Link copied!" : "Share draft link with players"}
+          </button>
         </div>
       </div>
 
@@ -489,51 +533,20 @@ export default function AdminPage() {
             {startMutation.isPending ? "Starting..." : "Start Draft"}
           </button>
         )}
-        {session.closed && (
-          <button
-            onClick={() => router.push(`/session/${id}/draft`)}
-            className="px-8 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all shadow-lg shadow-cyan-500/20"
-          >
-            {draftComplete ? "View Results" : "Go to Draft Board"}
-          </button>
-        )}
-        {(draftComplete || draftActive) && (
+        {draftComplete && (
           <button
             onClick={() =>
               confirmAction(
                 () => resetMutation.mutate(),
-                draftActive
-                  ? "Abort the in-progress draft and return to setup?"
-                  : "Reset all picks and start over?"
+                "Reset all picks and start over?"
               )
             }
             disabled={resetMutation.isPending}
             className="px-8 py-3 rounded-xl bg-[var(--surface-hover)] text-[var(--text-secondary)] font-semibold hover:bg-[var(--elevated2)] disabled:opacity-50 transition-all border border-[var(--border)]"
           >
-            {resetMutation.isPending ? "..." : draftActive ? "Abort Draft" : "Reset Draft"}
+            {resetMutation.isPending ? "..." : "Reset Draft"}
           </button>
         )}
-      </div>
-
-      <div className="flex justify-center mt-6">
-        <button
-          onClick={async () => {
-            const url = window.location.href;
-            if (navigator.share) {
-              await navigator.share({ title: session?.title ?? "PhotoDraft", url });
-            } else {
-              await navigator.clipboard.writeText(url);
-              setShareCopied(true);
-              setTimeout(() => setShareCopied(false), 2000);
-            }
-          }}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--surface-hover)] text-[var(--text-muted)] text-sm hover:text-[var(--text-secondary)] hover:bg-[var(--elevated2)] transition-all border border-[var(--border)]"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
-          </svg>
-          {shareCopied ? "Link copied!" : "Share draft link with players"}
-        </button>
       </div>
     </main>
   );
