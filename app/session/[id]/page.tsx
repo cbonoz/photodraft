@@ -517,36 +517,35 @@ export default function AdminPage() {
             </svg>
             {shareCopied ? "Link copied!" : "Share draft link with players"}
           </button>
-        </div>
-      </div>
 
-      <div className="flex justify-center gap-4">
-        {photos.length > 0 && players.length > 0 && !session.closed && (
-          <button
-            onClick={async () => {
-              await startMutation.mutateAsync();
-              router.push(`/session/${id}/draft`);
-            }}
-            disabled={startMutation.isPending}
-            className="px-10 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold text-lg hover:from-cyan-400 hover:to-blue-500 disabled:opacity-50 transition-all shadow-lg shadow-cyan-500/20"
-          >
-            {startMutation.isPending ? "Starting..." : "Start Draft"}
-          </button>
-        )}
-        {draftComplete && (
-          <button
-            onClick={() =>
-              confirmAction(
-                () => resetMutation.mutate(),
-                "Reset all picks and start over?"
-              )
-            }
-            disabled={resetMutation.isPending}
-            className="px-8 py-3 rounded-xl bg-[var(--surface-hover)] text-[var(--text-secondary)] font-semibold hover:bg-[var(--elevated2)] disabled:opacity-50 transition-all border border-[var(--border)]"
-          >
-            {resetMutation.isPending ? "..." : "Reset Draft"}
-          </button>
-        )}
+          {photos.length > 0 && players.length > 0 && !session.closed && (
+            <button
+              onClick={async () => {
+                await startMutation.mutateAsync();
+                router.push(`/session/${id}/draft`);
+              }}
+              disabled={startMutation.isPending}
+              className="w-full mt-4 px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold text-lg hover:from-cyan-400 hover:to-blue-500 disabled:opacity-50 transition-all shadow-lg shadow-cyan-500/20"
+            >
+              {startMutation.isPending ? "Starting..." : "Start Draft"}
+            </button>
+          )}
+
+          {draftComplete && (
+            <button
+              onClick={() =>
+                confirmAction(
+                  () => resetMutation.mutate(),
+                  "Reset all picks and start over?"
+                )
+              }
+              disabled={resetMutation.isPending}
+              className="w-full mt-4 px-6 py-3 rounded-xl bg-[var(--surface-hover)] text-[var(--text-secondary)] font-semibold hover:bg-[var(--elevated2)] disabled:opacity-50 transition-all border border-[var(--border)]"
+            >
+              {resetMutation.isPending ? "..." : "Reset Draft"}
+            </button>
+          )}
+        </div>
       </div>
     </main>
   );
